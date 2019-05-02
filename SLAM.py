@@ -1,0 +1,1 @@
+# SLAM algorithm component
