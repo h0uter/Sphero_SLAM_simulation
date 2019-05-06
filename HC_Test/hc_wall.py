@@ -42,9 +42,6 @@ wl3_ar= origin[0] +np.array(wl3)
 
 wall_location=      [wl1_ar, wl2_ar, wl3_ar]
 
-print wall_location# [[126, 12, 126, 385], [251, 136, 251, 490], [375, 12, 375, 385]]]
-
-
 "CLASSES INSIDE WALLS AND BOUNDARIE WALLS"
 
 class wall(object):
