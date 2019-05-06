@@ -8,5 +8,8 @@ class Sphero:
     self.x_right = 275
     self.y_bottom = 275
 
+    self.speed_x = 40
+    self.speed_y = 60
+
   def draw(self,canvas):
     return canvas.create_oval(self.x_left, self.y_top, self.x_right, self.y_bottom, fill="blue", tag='ball')
