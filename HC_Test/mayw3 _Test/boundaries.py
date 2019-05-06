@@ -1,94 +1,7 @@
-# describes the walls which are placed in the world
-from tkinter import *
+from Tkinter import *
 from math import sin, cos, pi, fabs
 from numpy import sign
-import numpy as np
-
-""" This file will be used as an import, where the variables inside the object will be given in the master python.
-
-the variables: 
-    wall_width = width of the used wall in the canvas
-    wall_location = An array whichi gives the starting location of each wall piece
-    wall_canvas = gives the size of the Canvas, more info @ http://effbot.org/tkinterbook/canvas.htm    -> bij strinivas is wall_canvas = w
-
-    Example wall location  [ origin = (2,2), worldsize = (498,498)]
-      =[[origin[0]+(world_size[0])/4,origin[1]+wall_width,origin[0]+(world_size[0])/4,origin[1]+wall_width+(world_size[1])*3/4],
-                    [origin[0]+(world_size[0])/2,origin[1]+wall_width+(world_size[1])*1/4,origin[0]+(world_size[0])/2,origin[1]-wall_width+world_size[1]],
-                    [origin[0]+(world_size[0])*3/4,origin[1]+wall_width,origin[0]+(world_size[0])*3/4,origin[1]+wall_width+(world_size[1])*3/4]] 
-    
-"""
-
-
-"VARIABLES"
-
-origin = (2,2)
-world_size = (498, 498)   # 750,750
-wall_width = 10
-wall_heigth= world_size[0] *3 /4
-
-
-ww= wall_width
-wh= wall_heigth
-ws= world_size #wallheight
-
-wl1= [ws[0] *1 /4   , ww              ,   (ws[0] *1 / 4) + ww     , wh]
-wl2= [ws[0] *2 /4   , ww+ (ws[0]/4)   ,   (ws[0] *2 / 4) + ww     , (ww + ws[0]/4) +   wh - 2*ww ]
-wl3= [ws[0] *3 /4   , ww              ,   (ws[0] *3 / 4) + ww     , wh]
-
-
-wl1_ar= origin[0] +np.array(wl1)
-wl2_ar= origin[0] +np.array(wl2)
-wl3_ar= origin[0] +np.array(wl3)
-
-wall_location=      [wl1_ar, wl2_ar, wl3_ar]
-
-print wall_location# [[126, 12, 126, 385], [251, 136, 251, 490], [375, 12, 375, 385]]]
-
-
-"CLASSES INSIDE WALLS AND BOUNDARIE WALLS"
-
-class wall(object):
-    def __init__(self,wall_width,wall_location):
-        self.warray = []
-        self.wall_with = wall_width 
-
-    # this definition makes a wall by drawing lines between the given point, more info@ http://effbot.org/tkinterbook/canvas.htm
-    #w.create_line(Start_X, Start_Y, Einde_X, Einde_Y)
-    #range(len(loc)) -> range( lengte( wall_location)))
-    def draw(self, wall_width, wall_location, wall_canvas):
-        for i in range(len(wall_location)):
-            #m = self.slope(wall_location[i])
-            ww=wall_width
-            wc=wall_canvas
-            wl=wall_location
-            wc.create_rectangle(wl[i][0],wl[i][1],wl[i][2],wl[i][3])
-
-    def wall_grid(self,ww,loc,w):
-        
-        d = 100  # Discretization of the grid
-        
-        for i in range(len(loc)):
-            ws = loc[i][:2]
-            we = loc[i][2:]
-            for i in range(d):
-                self.warray.append([ws[0]+sign(we[0]-ws[0])*(we[0]-ws[0])/d,
-                                   ws[1]+sign(we[1]-ws[1])*(we[1]-ws[1])*i/d])
-                w.create_line(self.warray[-1][0]+sign(we[1]-ws[1])*ww,self.warray[-1][1]+sign(we[0]-ws[0])*ww/2-5,
-                              self.warray[-1][0]+sign(we[1]-ws[1])-1,self.warray[-1][1]+sign(we[0]-ws[0])*ww/2-5)
-                
-        return self.warray
-    
-"""
-            wc.create_line(wl[i][0],wl[i][1],wl[i][2],wl[i][1])
-            wc.create_line(wl[i][0],wl[i][1],wl[i][0],wl[i][3])
-            wc.create_line(wl[i][2],wl[i][1],wl[i][2],wl[i][3])
-            wc.create_line(wl[i][0],wl[i][3],wl[i][2],wl[i][3])
-""" 
-
-
-
-
-
+import sys
 
 class boundaries(object):
     
@@ -147,9 +60,11 @@ class boundaries(object):
             w.create_line(corner[j%len(corner)][0],corner[j%len(corner)][1],
                           corner[j%len(corner)][0]+sign(corner[j%len(corner)][1]-corner[(j-1)%len(corner)][1])*self.wall_width,
                           corner[j%len(corner)][1]-sign(corner[j%len(corner)][0]-corner[(j-1)%len(corner)][0])*self.wall_width)
-        return self.parray    
+        return self.parray
+    
 #     def histogram_distribution(self,collision,parray):
-   
+        
+        
     def length_boundary(self,cornerA,cornerB):
         
         a = max(fabs(cornerA[0]-cornerB[0]),fabs(cornerA[1]-cornerB[1])) # length of the line
