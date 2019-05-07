@@ -1,3 +1,4 @@
 # representation of the world
 
-import wall
+WIDTH = 500
+HEIGHT = 500
