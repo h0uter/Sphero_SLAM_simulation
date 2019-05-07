@@ -10,22 +10,23 @@ frame1= Frame(root)
 frame1.pack(fill='both')
 
 # given environment
-wall_canvas = Canvas(frame1,width=w.WIDTH,height=w.HEIGHT,bg="green")
-wall_canvas.pack(side='left')
+environment_canvas = Canvas(frame1,width=w.WIDTH,height=w.HEIGHT,bg="green")
+environment_canvas.pack(side='left')
 
-# map made from observations
+# map made from observations by agent
 map_canvas = Canvas(frame1,width=w.WIDTH,height=w.HEIGHT,bg="white")
 map_canvas.pack(side='right')
 
+# initialize a sphero
 sphero = Sphero()
-sphero.draw(wall_canvas)
+sphero.draw(environment_canvas)
 
 while True:
     sphero.move()
 
     collision_check(sphero)
 
-    wall_canvas.move("ball", sphero.speed_x, sphero.speed_y)
-    wall_canvas.after(30)
-    wall_canvas.update()
+    environment_canvas.move("ball", sphero.speed_x, sphero.speed_y)
+    environment_canvas.after(30)
+    environment_canvas.update()
 mainloop()
