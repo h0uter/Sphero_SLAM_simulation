@@ -8,3 +8,7 @@ __pycache__/sphero\.cpython-37\.pyc
 \.vscode/\.ropeproject/objectdb
 
 __pycache__/
+
+HC_Test/hc_wall\.pyc
+
+*.pyc
