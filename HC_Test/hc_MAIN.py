@@ -50,7 +50,7 @@ def start():
         pose = pose[0]
 #         i = i + 1
 
-"Stop knop: Dit stopt de Loop met "loop = not(loop")
+"Stop knop: Dit stopt de Loop door:  loop = not(loop) "
 
 def stop():
     global loop, lw
@@ -211,7 +211,6 @@ parray = bounds.boundary_grid(origin,wall_canvas) # grid voor rand muren
 1. Hier worden de bestanden binnen Sphero_test.py ingevoerd.
 2. Hier worden de werkelijke muren waar de sphero rekening mee moet houden ingevoerd (constraints)
 3. Hier wordt het Slam algoritme binnen test_slam.py ingevoerd met functie: Particle en FastSLAM
-
 """
 # Creating Sphero robot
 s = Sphero(wall_canvas) #Haalt informatie uit Sphero file
