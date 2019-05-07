@@ -47,7 +47,7 @@ wall_location=      [wl1_ar, wl2_ar, wl3_ar]
 class wall(object):
     def __init__(self,wall_width,wall_location):
         self.warray = []
-        self.wall_with = wall_width 
+        self.wall_width = wall_width 
 
     # this definition makes a wall by drawing lines between the given point, more info@ http://effbot.org/tkinterbook/canvas.htm
     #w.create_line(Start_X, Start_Y, Einde_X, Einde_Y)

@@ -1,6 +1,8 @@
 from math import cos, pi, fabs, tan
 global pose, control, constraints, loop, radius, wall_width, world_size, flag, lw
 
+
+
 minimum_correspondence_likelihood = 1e-3
 xstddev = 0.001
 ystddev = 0.001
