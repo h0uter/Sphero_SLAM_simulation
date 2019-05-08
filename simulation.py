@@ -22,11 +22,10 @@ sphero = Sphero()
 sphero.draw(environment_canvas)
 
 while True:
-    sphero.move()
+  sphero.move()
+  collision_check(sphero)
 
-    collision_check(sphero)
-
-    environment_canvas.move("ball", sphero.speed_x, sphero.speed_y)
-    environment_canvas.after(30)
-    environment_canvas.update()
+  environment_canvas.move("ball", sphero.speed_x, sphero.speed_y)
+  environment_canvas.after(30)
+  environment_canvas.update()
 mainloop()
