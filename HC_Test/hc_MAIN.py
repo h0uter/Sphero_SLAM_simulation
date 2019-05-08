@@ -26,9 +26,10 @@ from test_slam import Particle, FastSLAM
 3.Voert het proces uit door "while loop"
 4.Wanneer pose niet gelijk is aan -1 dan zal het een measurement uitvoeren voor de robotmap (recht kaart)
 """
+
 def start():
     global pose, control, constraints, loop, radius, wall_width, world_size, flag, lw
-    scale = 520
+    scale = 100
     loop = not(loop)
     t = 0
     pmeasurement = []

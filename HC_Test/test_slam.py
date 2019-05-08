@@ -151,10 +151,31 @@ class Particle:
         # Update the corresponding landmark with the histogram update as well
         for i in arange(1,len(self.w[landmark_number]),1):
             mu = self.w[landmark_number][i]
+            angletest = mu[1]
+            t_test = floor(angletest % pi)
+            if t_test == float('0.0'):
+                t_test = int(0)  
+            else: t_test = int(t_test)
+
+            print '\n \n >>>>>>>>>      mu = {0} \n \n' .format(mu)
+            print '\n >>>>>>>>      t = {0}' .format(t_test)
+            # print '\n \n >>>>>>> \n Qt = {0}' .format(Qt)
+            # print '\n \n >>>>>>> \n Qt = {0}' .format(Qt[t_test][t_test])
+            # print '\n \n >>>>>>> \n Qt = {0}' .format(Qt[2][2])                
+            print '\n >>>>>>>>      diag = {0}'.format(diag([Qt[t_test][t_test],Qt[2][2]]))
+            print '\n >>>>>>>>      landmark = {0} \n \n' .format(landmark_number) 
+
             if (fabs(mu[0] - self.posep[0])<threshold and mu[1]%pi==0)or(fabs(mu[0]-self.posep[1])<threshold and mu[1]%(pi/2)== 0):
+
+                #print '\n \n \n \n >>>>>  \n \n mu = {0}  \n \n diag = {1} \n \n landmark = {2} \n \n'.format(mu,diag([Qt[t][t],Qt[2][2]]),landmark_number)
                 up_element = i # Corresopnding landmark to be updated
                 angle = mu[1]
-                t = floor(angle % pi)
+                t = int(floor(angle % pi))
+                "Debugged t array error for Q"
+                # if t == float('0.0'):
+                #     t = int(0)  
+                # else: t = int(t)
+
                 Sigma = self.landmark_covariances[landmark_number]
                 H, Ql = self.H_and_Ql_from_measurement(mu,diag([Qt[t][t],Qt[2][2]]),landmark_number)
                 K = dot(dot(Sigma,H.T),inv(Ql))
@@ -265,12 +286,12 @@ class FastSLAM:
         return poses
             
     def update_and_compute_weights(self,measurement):
+
         Qt = diag([self.xstddev ** 2, self.ystddev ** 2,self.measurement_stddev ** 2]) 
         weights = []
         for p in self.particles:
             number_of_landmarks = p.number_of_landmarks()
-            weight, wall, lw = p.update_particle(measurement,number_of_landmarks,self.minimum_correspondence_likelihood,
-                                            Qt)
+            weight, wall, lw = p.update_particle(measurement,number_of_landmarks,self.minimum_correspondence_likelihood,Qt)
             weights.append(weight)
             
         return weights, wall, lw
