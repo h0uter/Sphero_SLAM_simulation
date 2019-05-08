@@ -25,6 +25,8 @@ while True:
   sphero.move()
   collision_check(sphero)
 
+  # TODO: beter om current frame te tekenen
+
   environment_canvas.move("ball", sphero.speed_x, sphero.speed_y)
   environment_canvas.after(30)
   environment_canvas.update()

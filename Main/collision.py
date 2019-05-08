@@ -10,7 +10,8 @@ def collision_check(sphero):
         print ("collision left")
         sphero.speed_x = -sphero.speed_x
     if sphero.y_bottom >= w.HEIGHT:
-        print ("collision botom")
+        #TODO: log coordinates of the wall
+        print ("collision bottom at {0}".format(sphero.x_left + 25))
         sphero.speed_y = -sphero.speed_y
     if sphero.y_top <= 0:
         print ("collision top")

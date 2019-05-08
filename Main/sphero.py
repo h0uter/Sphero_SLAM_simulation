@@ -1,9 +1,6 @@
 # Describes a Sphero agent which can move through the world and collide with walls
 import numpy as np
 
-
-
-
 class Sphero:
   def __init__(self):
     self.x_left = 225
