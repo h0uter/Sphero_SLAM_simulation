@@ -23,7 +23,7 @@ position of the robot. If collision is detected, we add this to the integrated d
 Created by Srinivas K."""
     def __init__(self,canvas):
         self.cursor_objects = []
-        self.canvas = canvas
+        self.canvas = canvas #gives the boundaries of the environment, given by hc_main
     
     def motion(self, pose, control, dt):  # Unicycle mkotion model
         control[1]=control[1]%360

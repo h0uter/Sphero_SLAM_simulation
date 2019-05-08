@@ -24,23 +24,26 @@ Created by Srinivas K."""
     def __init__(self,canvas):
         self.cursor_objects = []
         self.canvas = canvas
+
+# this code is not used
+    # def motion(self, pose, control, dt):  # Unicycle mkotion model
+    #     control[1]=control[1]%360
+    #     angle = ((control[1]+pose[2]*180/pi)%360)*pi/180
+    #     return ([x+y for x,y in zip(pose,[control[0]*dt*cos(angle), 
+    #                                       control[0]*dt*sin(angle), 
+    #                                       control[0]*dt*sin(control[1]*pi/180)/WB])])
     
-    def motion(self, pose, control, dt):  # Unicycle mkotion model
-        control[1]=control[1]%360
-        angle = ((control[1]+pose[2]*180/pi)%360)*pi/180
-        return ([x+y for x,y in zip(pose,[control[0]*dt*cos(angle), 
-                                          control[0]*dt*sin(angle), 
-                                          control[0]*dt*sin(control[1]*pi/180)/WB])])
-    
+
+    # def draw is used hc_main within the 'def Start'.
     def draw(self, pose):     # Draw the Sphero robot in the simulated scene
         if self.cursor_objects:
             map(self.canvas.delete, self.cursor_objects)
             self.cursor_objects = []
         
         xsp, ysp =[], []
-        xsp.append(pose[0])
+        xsp.append(pose[0]) #append -> plakt een waarde achter een matrix. https://www.w3schools.com/python/ref_list_append.asp
         ysp.append(pose[1])
-        for i in arange(0,2*pi,0.01):      # List of spherical points
+        for i in arange(0, 2*pi, 0.01 ): #List of spherical points from 0 to 2*pi with steps of 0.01
             angle = (i + pose[2])%(2*pi)
             xsp.append(pose[0] + r * cos(angle))
             ysp.append(pose[1] + r * sin(angle))
