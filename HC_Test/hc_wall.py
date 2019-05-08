@@ -42,15 +42,12 @@ wl3_ar= origin[0] +np.array(wl3)
 
 wall_location=      [wl1_ar, wl2_ar, wl3_ar]
 
-print wall_location# [[126, 12, 126, 385], [251, 136, 251, 490], [375, 12, 375, 385]]]
-
-
 "CLASSES INSIDE WALLS AND BOUNDARIE WALLS"
 
 class wall(object):
     def __init__(self,wall_width,wall_location):
         self.warray = []
-        self.wall_with = wall_width 
+        self.wall_width = wall_width 
 
     # this definition makes a wall by drawing lines between the given point, more info@ http://effbot.org/tkinterbook/canvas.htm
     #w.create_line(Start_X, Start_Y, Einde_X, Einde_Y)
