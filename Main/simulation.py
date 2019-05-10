@@ -21,9 +21,13 @@ map_canvas.pack(side='right')
 sphero = Sphero()
 sphero.draw(environment_canvas)
 
+# place to store all collisions
+collision_list = []
+
 while True:
   sphero.move()
   collision_check(sphero)
+  
 
   # TODO: beter om current frame te tekenen
 

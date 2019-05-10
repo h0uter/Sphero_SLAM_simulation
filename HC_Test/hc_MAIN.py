@@ -1,5 +1,5 @@
-
 from Tkinter import *
+from tkinter import *
 from hc_wall import *
 #from hc_robotmap import robotmap
 #from hc_button import *

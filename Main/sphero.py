@@ -3,9 +3,7 @@ import numpy as np
 
 class Sphero:
   def __init__(self):
-
-
-
+    
     self.x_left = 225
     self.y_top = 225
     self.x_right = 275
@@ -16,6 +14,8 @@ class Sphero:
 
     self.speed_x = 13
     self.speed_y = 9
+
+    # TODO: position & velocity propperty
     # Create a vector as a column
     # velocity = np.array([[self.speed_x],
     #                     [self.speed_y]])
