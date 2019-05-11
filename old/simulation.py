@@ -20,7 +20,6 @@ map_canvas.pack(side='right')
 # initialize a sphero
 sphero = Sphero()
 sphero.draw(environment_canvas)
-environment_canvas.create_circle
 
 # place to store all collisions
 collision_list = []
@@ -37,17 +36,3 @@ while True:
 
 mainloop()
 
-def solve_step(ball_list, step, size):
-    """Solve a step for every ball."""
-    
-    # Detect edge-hitting and collision of every ball
-    for ball1 in ball_list:
-        ball1.compute_refl(step,size)
-        for ball2 in ball_list:
-            if ball1 is not ball2:
-                ball1.compute_coll(ball2,step)
-                
-    # Compute position of every ball  
-    for ball in ball_list:
-        ball.new_velocity()
-        ball.compute_step(step)

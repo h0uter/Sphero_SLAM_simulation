@@ -1,6 +1,5 @@
-# outputs a topdown view of the world
-# overlayed with the position of the Sphero and the map it has created of it's environment
 import tkinter as tk
+import solver
 
 def _create_circle(self, x, y, r, **kwargs):
     """Create a circle
@@ -27,39 +26,50 @@ def _coords_circle(self, target, x, y, r, **kwargs):
     return self.coords(target, x-r, y-r, x+r, y+r, **kwargs)
 tk.Canvas.coords_circle = _coords_circle
 
-class View:
-  def __init__(self, step, size):
-    """Initialize and launch the view"""
-    self.step = step
-    self.size = size
+class Display:
+    """Define the window used to display a simulation"""
+    
+    def __init__(self, balls, step, size):
+        """Initialize and launch the display"""
+        self.balls = balls
+        self.step = step
+        self.size = size
+        
+        self.window = tk.Tk()
+        frame1= tk.Frame(self.window)
+        frame1.pack(fill='both')
+        # environment_canvas
+        self.environment_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg="black")
+        self.environment_canvas.pack(side='left')
+        self.environment_canvas.focus_set()
+        # mapping canvas
+        self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg="black")
+        self.mapping_canvas.pack(side='right')
 
-    self.window = tk.Tk()
-    self.canvas = tk.Canvas(self.window, width=self.size, height=self.size, bg="black")
-    self.canvas.pack()
-    self.canvas.focus_set()
-    self.drawing = self.create()
-    self.started = False
 
-    start_button = tk.Button(self.window, text="Start", command=self.start)
-    stop_button = tk.Button(self.window, text="Pause", command=self.stop)
-    start_button.pack()
-    stop_button.pack()
-
-    self.window.mainloop()
+        self.drawing = self.create()
+        self.started = False
+    
+        start_button = tk.Button(self.window, text="Start", command=self.start)
+        stop_button = tk.Button(self.window, text="Pause", command=self.stop)
+        start_button.pack()
+        stop_button.pack()
+    
+        self.window.mainloop()
     
     def create(self):
         """Create a drawing item for each solver.Ball object
             
         return a dictionary with solver.Ball objects as keys and their circle drawings as items
         """
-        return {ball: self.canvas.create_circle(ball.position[0], ball.position[1], ball.radius, fill="white") for ball in self.balls}
+        return {ball: self.environment_canvas.create_circle(ball.position[0], ball.position[1], ball.radius, fill="white") for ball in self.balls}
 
     def update(self):
         """Update the drawing items for a time step"""
         solver.solve_step(self.balls, self.step, self.size)
         for ball in self.balls:
-            self.canvas.coords_circle(self.drawing[ball], ball.position[0], ball.position[1], ball.radius)
-        self.canvas.update()
+            self.environment_canvas.coords_circle(self.drawing[ball], ball.position[0], ball.position[1], ball.radius)
+        self.environment_canvas.update()
 
     def start(self):
         """Start the animation"""
@@ -79,7 +89,7 @@ class View:
 
 # Test this module
 if __name__ == "__main__":
-    balls = [solver.Ball(20., 20., [40.,40.], [5.,5.]), solver.Ball(10., 10., [480.,480.], [-15.,-15.]), solver.Ball(15., 15., [30.,470.], [10.,-10.])]
+    balls = [solver.Sphero(20., 20., [40.,40.], [5.,5.]), solver.Sphero(10., 10., [480.,480.], [-15.,-15.]), solver.Sphero(15., 15., [30.,470.], [10.,-10.])]
     size = 500.
     step = 0.01
     Display(balls, step, size)
