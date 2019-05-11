@@ -3,6 +3,7 @@ import numpy as np
 from display import *
 from solver import *
 
+# can generate a list of different sizes balls if needed
 def init_list(N):
     balls = []
     r = 10.
@@ -21,7 +22,7 @@ if __name__ == "__main__":
     # step = 0.02
     # Display(balls, step, size)
 
-    spheros = [solver.Sphero(20., 20., [40.,40.], [6.,5.])]
-    size = 300.
+    spheros = [solver.Sphero(20., 15., [40.,80.], [8.,2.]), solver.Sphero(20., 15., [40.,40.], [6.,5.]), solver.Sphero(20., 15., [40.,120.], [10.,15.])]
+    size = 500.
     step = 0.01
     Display(spheros, step, size)

@@ -30,6 +30,7 @@ class Sphero:
         """Compute kinetic energy."""
         return self.mass / 2. * np.linalg.norm(self.velocity)**2
 
+    # TODO: make sphero's re-accelerate to their maximum velocity after collision
     def compute_coll(self, ball, step):
         """Compute velocity after collision with another ball."""
         m1, m2 = self.mass, ball.mass

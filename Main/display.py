@@ -34,16 +34,20 @@ class Display:
         self.spheros = spheros
         self.step = step
         self.size = size
+
+        self.color1 = "#721F1F" 
+        self.color2 = "#5F7999"
+        self.color3 = "#D9F3FF"
         
         self.window = tk.Tk()
         frame1= tk.Frame(self.window)
         frame1.pack(fill='both')
         # environment_canvas
-        self.environment_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg="black")
+        self.environment_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color1)
         self.environment_canvas.pack(side='left')
         self.environment_canvas.focus_set()
         # mapping canvas
-        self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg="blue")
+        self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color2)
         self.mapping_canvas.pack(side='right')
 
 
@@ -63,7 +67,7 @@ class Display:
             
         return a dictionary with solver.Sphero objects as keys and their circle drawings as items
         """
-        return {ball: self.environment_canvas.create_circle(ball.position[0], ball.position[1], ball.radius, fill="white") for ball in self.spheros}
+        return {sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color2) for sphero in self.spheros}
 
     def update(self):
         """Update the drawing items for a time step"""
@@ -73,7 +77,7 @@ class Display:
             # draw collisions in mapping environment
             if len(sphero.collision_list) > 0:
                 collision = sphero.collision_list.pop()
-                self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-5, collision[0]+5, collision[1]+5 )
+                self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-5, collision[0]+5, collision[1]+5, outline=self.color1 )
 
         self.environment_canvas.update()
 
