@@ -29,9 +29,9 @@ tk.Canvas.coords_circle = _coords_circle
 class Display:
     """Define the window used to display a simulation"""
     
-    def __init__(self, balls, step, size):
+    def __init__(self, spheros, step, size):
         """Initialize and launch the display"""
-        self.balls = balls
+        self.spheros = spheros
         self.step = step
         self.size = size
         
@@ -57,19 +57,21 @@ class Display:
     
         self.window.mainloop()
     
+    # TODO: create drawing item for each collision
     def create(self):
-        """Create a drawing item for each solver.Ball object
+        """Create a drawing item for each solver.Sphero object
             
-        return a dictionary with solver.Ball objects as keys and their circle drawings as items
+        return a dictionary with solver.Sphero objects as keys and their circle drawings as items
         """
-        return {ball: self.environment_canvas.create_circle(ball.position[0], ball.position[1], ball.radius, fill="white") for ball in self.balls}
+        return {ball: self.environment_canvas.create_circle(ball.position[0], ball.position[1], ball.radius, fill="white") for ball in self.spheros}
 
     def update(self):
         """Update the drawing items for a time step"""
-        solver.solve_step(self.balls, self.step, self.size)
-        for ball in self.balls:
+        solver.solve_step(self.spheros, self.step, self.size)
+        for ball in self.spheros:
             self.environment_canvas.coords_circle(self.drawing[ball], ball.position[0], ball.position[1], ball.radius)
         self.environment_canvas.update()
+
 
     def start(self):
         """Start the animation"""

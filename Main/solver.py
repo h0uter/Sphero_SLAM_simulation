@@ -4,7 +4,7 @@ class Sphero:
     """Define physics of elastic collision."""
     
     def __init__(self, mass, radius, position, velocity):
-        """Initialize a Ball object
+        """Initialize a Sphero object
         
         mass the mass of sphero
         radius the radius of sphero
@@ -16,6 +16,7 @@ class Sphero:
         self.position = np.array(position)
         self.velocity = np.array(velocity)
         self.vafter = np.copy(velocity) # temporary storage for velocity of next step
+        self.collision_list = []
 
     def compute_step(self, step):
         """Compute position of next step."""
@@ -25,12 +26,10 @@ class Sphero:
         """Store velocity of next step."""
         self.velocity = self.vafter
         
-    # TODO: remove energy component 
     def computeEnergy(self, ball_list):
         """Compute kinetic energy."""
         return self.mass / 2. * np.linalg.norm(self.velocity)**2
 
-    # TODO: turn this into wall collisions instead of other balls
     def compute_coll(self, ball, step):
         """Compute velocity after collision with another ball."""
         m1, m2 = self.mass, ball.mass
@@ -48,20 +47,27 @@ class Sphero:
         step the computation step
         size the medium size
         """
-        r, v, x = self.radius, self.velocity, self.position
+        r, v, pos = self.radius, self.velocity, self.position
         projx = step*abs(np.dot(v,np.array([1.,0.])))
         projy = step*abs(np.dot(v,np.array([0.,1.])))
 
+        # TODO: generallize this for any wall not just edges
         # x collision
-        if abs(x[0])-r < projx or abs(size-x[0])-r < projx:
+        if abs(pos[0])-r < projx or abs(size-pos[0])-r < projx:
             self.vafter[0] *= -1
+            # TODO: make this the collision pos instead of the sphero pos
+            self.collision_list.append(pos)
+            print (self.collision_list[-1])
+            
         # y collision
-        if abs(x[1])-r < projy or abs(size-x[1])-r < projy:
+        if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
             self.vafter[1] *= -1.
+            self.collision_list.append(pos)
+            print (self.collision_list[-1])
 
 
 def solve_step(sphero_list, step, size):
-    """Solve a step for every ball."""
+    """Solve a step for every sphero."""
     
     # Detect edge-hitting and collision of every ball
     for sphero1 in sphero_list:
@@ -74,3 +80,4 @@ def solve_step(sphero_list, step, size):
     for sphero in sphero_list:
         sphero.new_velocity()
         sphero.compute_step(step)
+

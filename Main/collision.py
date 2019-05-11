@@ -22,6 +22,6 @@ if __name__ == "__main__":
     # Display(balls, step, size)
 
     spheros = [solver.Sphero(20., 20., [40.,40.], [6.,5.])]
-    size = 600.
+    size = 300.
     step = 0.01
     Display(spheros, step, size)
