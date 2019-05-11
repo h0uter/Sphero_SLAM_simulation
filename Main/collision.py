@@ -16,10 +16,12 @@ def init_list(N):
     return balls
         
 if __name__ == "__main__":
-    balls = init_list(10)
-    size = 400.
-    step = 0.02
-    Display(balls, step, size)
-    
-                
-    
+    # balls = init_list(10)
+    # size = 400.
+    # step = 0.02
+    # Display(balls, step, size)
+
+    spheros = [solver.Sphero(20., 20., [40.,40.], [6.,5.])]
+    size = 600.
+    step = 0.01
+    Display(spheros, step, size)

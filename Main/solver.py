@@ -6,10 +6,10 @@ class Sphero:
     def __init__(self, mass, radius, position, velocity):
         """Initialize a Ball object
         
-        mass the mass of ball
-        radius the radius of ball
-        position the position vector of ball
-        velocity the velocity vector of ball
+        mass the mass of sphero
+        radius the radius of sphero
+        position the position vector of sphero
+        velocity the velocity vector of sphero
         """
         self.mass = mass
         self.radius = radius
@@ -25,10 +25,12 @@ class Sphero:
         """Store velocity of next step."""
         self.velocity = self.vafter
         
+    # TODO: remove energy component 
     def computeEnergy(self, ball_list):
         """Compute kinetic energy."""
         return self.mass / 2. * np.linalg.norm(self.velocity)**2
-    
+
+    # TODO: turn this into wall collisions instead of other balls
     def compute_coll(self, ball, step):
         """Compute velocity after collision with another ball."""
         m1, m2 = self.mass, ball.mass
@@ -49,23 +51,26 @@ class Sphero:
         r, v, x = self.radius, self.velocity, self.position
         projx = step*abs(np.dot(v,np.array([1.,0.])))
         projy = step*abs(np.dot(v,np.array([0.,1.])))
+
+        # x collision
         if abs(x[0])-r < projx or abs(size-x[0])-r < projx:
             self.vafter[0] *= -1
+        # y collision
         if abs(x[1])-r < projy or abs(size-x[1])-r < projy:
             self.vafter[1] *= -1.
 
 
-def solve_step(ball_list, step, size):
+def solve_step(sphero_list, step, size):
     """Solve a step for every ball."""
     
     # Detect edge-hitting and collision of every ball
-    for ball1 in ball_list:
-        ball1.compute_refl(step,size)
-        for ball2 in ball_list:
-            if ball1 is not ball2:
-                ball1.compute_coll(ball2,step)
+    for sphero1 in sphero_list:
+        sphero1.compute_refl(step,size)
+        for sphero2 in sphero_list:
+            if sphero1 is not sphero2:
+                sphero1.compute_coll(sphero2,step)
                 
     # Compute position of every ball  
-    for ball in ball_list:
-        ball.new_velocity()
-        ball.compute_step(step)
+    for sphero in sphero_list:
+        sphero.new_velocity()
+        sphero.compute_step(step)

@@ -43,7 +43,7 @@ class Display:
         self.environment_canvas.pack(side='left')
         self.environment_canvas.focus_set()
         # mapping canvas
-        self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg="black")
+        self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg="blue")
         self.mapping_canvas.pack(side='right')
 
 
