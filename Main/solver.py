@@ -56,13 +56,15 @@ class Sphero:
         if abs(pos[0])-r < projx or abs(size-pos[0])-r < projx:
             self.vafter[0] *= -1
             # TODO: make this the collision pos instead of the sphero pos
-            self.collision_list.append(pos)
+            collision_coords = np.array(pos)
+            self.collision_list.append(collision_coords)
             print (self.collision_list[-1])
             
         # y collision
         if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
             self.vafter[1] *= -1.
-            self.collision_list.append(pos)
+            collision_coords = np.array(pos)
+            self.collision_list.append(collision_coords)
             print (self.collision_list[-1])
 
 
@@ -81,3 +83,4 @@ def solve_step(sphero_list, step, size):
         sphero.new_velocity()
         sphero.compute_step(step)
 
+        
