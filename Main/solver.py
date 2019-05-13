@@ -80,17 +80,29 @@ class Sphero:
         """
         r, v, pos = self.radius, self.velocity, self.position
         projx = step*abs(np.dot(v,np.array([1.,0.])))
+        projy = step*abs(np.dot(v,np.array([0.,1.])))
 
 
         # TODO: generallize this for any wall not just edges
-        #  TODO: make this work for all walls, not just wall_list[0]
+        #  TODO: fix sphero getting stuck on edge collision
         # x collision from right side
-        if abs(wall_list[0].position[0]-pos[0])-r < projx and pos[1] < wall_list[0].position[3]:
-            self.vafter[0] *= -1
-            # TODO: make this the collision pos instead of the sphero pos
-            collision_coords = np.array(pos)
-            self.collision_list_x.append(collision_coords)
-            print (self.collision_list_x[-1])
+        for wall in wall_list:
+            if (abs(wall.position[0]-pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]) or (abs(-wall.position[2]+pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]):
+                self.vafter[0] *= -1
+                # TODO: make this the collision pos instead of the sphero pos
+                collision_coords = np.array(pos)
+                self.collision_list_x.append(collision_coords)
+                print("projx: {}".format(projx))
+                print (self.collision_list_x[-1])
+
+            # y collision
+            if abs(wall.position[3] - pos[1])-r < projy and pos[0] +r > wall.position[0] and pos[0] - r < wall.position[2]:
+                self.vafter[1] *= -1.
+                collision_coords = np.array(pos)
+                self.collision_list_y.append(collision_coords)
+                print("projy: {}".format(projy))
+                print (self.collision_list_y[-1])
+
 
 class Wall:
     """Wall definition"""

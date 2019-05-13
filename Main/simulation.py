@@ -21,9 +21,9 @@ if __name__ == "__main__":
     # size = 400.
     # step = 0.02
     # Display(balls, step, size)
-
-    spheros = [solver.Sphero(20., 15., [40.,80.], [8.,2.]), solver.Sphero(20., 15., [40.,40.], [6.,5.]), solver.Sphero(20., 15., [40.,120.], [10.,15.])]
-    walls = [Wall([100,0,110,200])]
     size = 500.
     step = 0.01
+    spheros = [solver.Sphero(20., 15., [300.,400.], [-8.,-8.]), solver.Sphero(20., 15., [40.,40.], [6.,5.]), solver.Sphero(20., 15., [40.,120.], [10.,15.])]
+    walls = [Wall([100,0,110,300]), Wall([400,0,410,300]), Wall([250, int(size-300), 260, int(size)])]
+
     Display(spheros, walls, step, size)
