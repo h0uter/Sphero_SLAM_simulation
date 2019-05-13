@@ -44,15 +44,15 @@ class Display:
         self.color3 = "#D9F3FF"
         self.color4 = "#D9F3FF" #color wall
         
-        """ window """
+        """window"""
         self.window = tk.Tk()
         frame1= tk.Frame(self.window)
         frame1.pack(fill='both')
-        """ environment_canvas """
+        """environment_canvas"""
         self.environment_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color1)
         self.environment_canvas.pack(side='left')
         self.environment_canvas.focus_set()
-        """ mapping canvas """
+        """mapping canvas"""
         self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color2)
         self.mapping_canvas.pack(side='right')
 
@@ -117,7 +117,8 @@ class Display:
         """Stop the animation"""
         self.started = False
 
-""" Test this module """
+
+"""Test this module"""
 if __name__ == "__main__":
     spheros = [solver.Sphero(20., 15., [300.,400.], [-8.,-8.]), solver.Sphero(20., 15., [40.,40.], [6.,5.]), solver.Sphero(20., 15., [40.,120.], [10.,15.])]
     walls = [solver.Wall([100,0,110,300]), solver.Wall([400,0,410,300]), solver.Wall([250, int(size-300), 260, int(size)])]
