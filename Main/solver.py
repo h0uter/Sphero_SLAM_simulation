@@ -91,17 +91,17 @@ class Sphero:
                 self.vafter[0] *= -1
                 # TODO: make this the collision pos instead of the sphero pos
                 collision_coords = np.array(pos)
-                self.collision_list_x.append(collision_coords)
+                self.collision_list_vert.append(collision_coords)
                 print("projx: {}".format(projx))
-                print (self.collision_list_x[-1])
+                print (self.collision_list_vert[-1])
 
             # y collision
             if abs(wall.position[3] - pos[1])-r < projy and pos[0] +r > wall.position[0] and pos[0] - r < wall.position[2]:
                 self.vafter[1] *= -1.
                 collision_coords = np.array(pos)
-                self.collision_list_y.append(collision_coords)
+                self.collision_list_hor.append(collision_coords)
                 print("projy: {}".format(projy))
-                print (self.collision_list_y[-1])
+                print (self.collision_list_hor[-1])
 
 
 class Wall:
