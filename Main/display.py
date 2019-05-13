@@ -26,6 +26,9 @@ def _coords_circle(self, target, x, y, r, **kwargs):
     return self.coords(target, x-r, y-r, x+r, y+r, **kwargs)
 tk.Canvas.coords_circle = _coords_circle
 
+def rgb(r, g, b):
+    return "#%s%s%s" % tuple([hex(c)[2:].rjust(2, "0") for c in (r, g, b)])
+
 class Display:
     """Define the window used to display a simulation"""
     
@@ -75,12 +78,14 @@ class Display:
         for sphero in self.spheros:
             self.environment_canvas.coords_circle(self.drawing[sphero], sphero.position[0], sphero.position[1], sphero.radius)
             # draw collisions in mapping environment
-            if len(sphero.collision_list_x) > 0:
-                collision = sphero.collision_list_x.pop()
-                self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-5, collision[0]+5, collision[1]+5, outline=self.color1 )
-            if len(sphero.collision_list_y) > 0:
-                collision = sphero.collision_list_y.pop()
-                self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-5, collision[0]+5, collision[1]+5, outline=self.color1 )
+            if len(sphero.collision_list_hor) > 0:
+                collision = sphero.collision_list_hor.pop()
+                self.mapping_canvas.create_rectangle(collision[0]-20, collision[1]-5, collision[0]+20, collision[1]+5, outline=self.color1, fill= rgb(100,100,100) )
+                            # draw collisions in mapping environment     
+            if len(sphero.collision_list_vert) > 0:
+                collision = sphero.collision_list_vert.pop()
+                collision_int= int(round(collision[0]))
+                self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-20, collision[0]+5, collision[1]+20, outline=self.color1, fill= rgb(100,100,100) )
         self.environment_canvas.update()
 
 
