@@ -40,8 +40,9 @@ class Display:
         self.size = size
 
         self.color1 = "#721F1F" 
-        self.color2 = "#5F7999"
+        self.color2 = "#5F7999" #color Sphero
         self.color3 = "#D9F3FF"
+        self.color4 = "#D9F3FF" #color wall
         
         self.window = tk.Tk()
         frame1= tk.Frame(self.window)
@@ -78,7 +79,7 @@ class Display:
 
     def create_walls(self):
         return {
-            wall: self.environment_canvas.create_rectangle(wall.position[0], wall.position[1], wall.position[2], wall.position[3]) for wall in self.walls
+            wall: self.environment_canvas.create_rectangle(wall.position[0], wall.position[1], wall.position[2], wall.position[3], fill =self.color4) for wall in self.walls
         }
 
     def update(self):
