@@ -75,10 +75,12 @@ class Display:
         for sphero in self.spheros:
             self.environment_canvas.coords_circle(self.drawing[sphero], sphero.position[0], sphero.position[1], sphero.radius)
             # draw collisions in mapping environment
-            if len(sphero.collision_list) > 0:
-                collision = sphero.collision_list.pop()
+            if len(sphero.collision_list_x) > 0:
+                collision = sphero.collision_list_x.pop()
                 self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-5, collision[0]+5, collision[1]+5, outline=self.color1 )
-
+            if len(sphero.collision_list_y) > 0:
+                collision = sphero.collision_list_y.pop()
+                self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-5, collision[0]+5, collision[1]+5, outline=self.color1 )
         self.environment_canvas.update()
 
 

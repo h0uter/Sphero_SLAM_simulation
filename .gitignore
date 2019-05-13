@@ -8,7 +8,6 @@ __pycache__/sphero\.cpython-37\.pyc
 \.vscode/\.ropeproject/objectdb
 
 *.pyc
-*.pyc
 
 */*/*/__pycache__/
 

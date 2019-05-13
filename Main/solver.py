@@ -16,7 +16,8 @@ class Sphero:
         self.position = np.array(position)
         self.velocity = np.array(velocity)
         self.vafter = np.copy(velocity) # temporary storage for velocity of next step
-        self.collision_list = []
+        self.collision_list_x = []
+        self.collision_list_y = []
 
     def compute_step(self, step):
         """Compute position of next step."""
@@ -58,15 +59,15 @@ class Sphero:
             self.vafter[0] *= -1
             # TODO: make this the collision pos instead of the sphero pos
             collision_coords = np.array(pos)
-            self.collision_list.append(collision_coords)
-            print (self.collision_list[-1])
+            self.collision_list_x.append(collision_coords)
+            print (self.collision_list_x[-1])
             
         # y collision
         if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
             self.vafter[1] *= -1.
             collision_coords = np.array(pos)
-            self.collision_list.append(collision_coords)
-            print (self.collision_list[-1])
+            self.collision_list_y.append(collision_coords)
+            print (self.collision_list_y[-1])
 
 
 def solve_step(sphero_list, step, size):
