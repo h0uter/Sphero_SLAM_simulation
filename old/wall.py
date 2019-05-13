@@ -1,1 +1,0 @@
-# describes the walls which are placed in the world
