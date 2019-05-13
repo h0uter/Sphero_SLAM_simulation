@@ -50,6 +50,7 @@ class Sphero:
         size the medium size
         """
         r, v, pos = self.radius, self.velocity, self.position
+        # make a projection of your next step on the axis -> check if you're gonna cross over this boundary the next step
         projx = step*abs(np.dot(v,np.array([1.,0.])))
         projy = step*abs(np.dot(v,np.array([0.,1.])))
 
@@ -60,6 +61,7 @@ class Sphero:
             # TODO: make this the collision pos instead of the sphero pos
             collision_coords = np.array(pos)
             self.collision_list_x.append(collision_coords)
+            print (projx)
             print (self.collision_list_x[-1])
             
         # y collision
@@ -67,15 +69,47 @@ class Sphero:
             self.vafter[1] *= -1.
             collision_coords = np.array(pos)
             self.collision_list_y.append(collision_coords)
+            print(projy)
             print (self.collision_list_y[-1])
 
+    def compute_inner_wall_refl(self, step, wall_list):
+        """Compute velocity after hitting any of the inner walls.
 
-def solve_step(sphero_list, step, size):
+        step the computation step
+        wall_list contains locations for all the walls
+        """
+        r, v, pos = self.radius, self.velocity, self.position
+        projx = step*abs(np.dot(v,np.array([1.,0.])))
+
+
+        # TODO: generallize this for any wall not just edges
+        #  TODO: make this work for all walls, not just wall_list[0]
+        # x collision from right side
+        if abs(wall_list[0].position[0]-pos[0])-r < projx and pos[1] < wall_list[0].position[3]:
+            self.vafter[0] *= -1
+            # TODO: make this the collision pos instead of the sphero pos
+            collision_coords = np.array(pos)
+            self.collision_list_x.append(collision_coords)
+            print (self.collision_list_x[-1])
+
+class Wall:
+    """Wall definition"""
+    def __init__(self, position):
+        """Initialize a Wall object (rectangle)
+        
+        position = [x1, y1, x2, y2]
+        left side: y =x1
+        right side: y =x2
+        """
+        self.position = position        
+
+def solve_step(sphero_list, wall_list, step, size):
     """Solve a step for every sphero."""
     
     # Detect edge-hitting and collision of every ball
     for sphero1 in sphero_list:
-        sphero1.compute_refl(step,size)
+        sphero1.compute_refl(step, size)
+        sphero1.compute_inner_wall_refl(step, wall_list)
         for sphero2 in sphero_list:
             if sphero1 is not sphero2:
                 sphero1.compute_coll(sphero2,step)

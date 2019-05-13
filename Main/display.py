@@ -29,9 +29,10 @@ tk.Canvas.coords_circle = _coords_circle
 class Display:
     """Define the window used to display a simulation"""
     
-    def __init__(self, spheros, step, size):
+    def __init__(self, spheros, walls, step, size):
         """Initialize and launch the display"""
         self.spheros = spheros
+        self.walls = walls
         self.step = step
         self.size = size
 
@@ -52,6 +53,7 @@ class Display:
 
 
         self.drawing = self.create()
+        self.create_walls()
         self.started = False
     
         start_button = tk.Button(self.window, text="Start", command=self.start)
@@ -61,17 +63,24 @@ class Display:
     
         self.window.mainloop()
     
-    # TODO: create drawing item for each collision
     def create(self):
         """Create a drawing item for each solver.Sphero object
             
         return a dictionary with solver.Sphero objects as keys and their circle drawings as items
         """
-        return {sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color2) for sphero in self.spheros}
+        # TODO: merge create & create walls
+        return {
+            sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color2) for sphero in self.spheros
+        }
+
+    def create_walls(self):
+        return {
+            wall: self.environment_canvas.create_rectangle(wall.position[0], wall.position[1], wall.position[2], wall.position[3]) for wall in self.walls
+        }
 
     def update(self):
         """Update the drawing items for a time step"""
-        solver.solve_step(self.spheros, self.step, self.size)
+        solver.solve_step(self.spheros, self.walls, self.step, self.size)
         for sphero in self.spheros:
             self.environment_canvas.coords_circle(self.drawing[sphero], sphero.position[0], sphero.position[1], sphero.radius)
             # draw collisions in mapping environment
