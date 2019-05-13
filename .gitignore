@@ -7,10 +7,13 @@ __pycache__/sphero\.cpython-37\.pyc
 
 \.vscode/\.ropeproject/objectdb
 
-__pycache__/
-
-HC_Test/hc_wall\.pyc
-
 *.pyc
+*.pyc
+
+*/*/*/__pycache__/
+
+*/*/__pycache__/
+
+*/__pycache__/
 
 Main/collision\.py\.754a4190e5cbf3fcddb9737e805a5325\.py
