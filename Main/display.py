@@ -31,7 +31,7 @@ def rgb(r, g, b):
 
 class Display:
     """Define the window used to display a simulation"""
-    
+
     def __init__(self, spheros, walls, step, size):
         """Initialize and launch the display"""
         self.spheros = spheros
@@ -44,22 +44,24 @@ class Display:
         self.color3 = "#D9F3FF"
         self.color4 = "#D9F3FF" #color wall
         
+        """ window """
         self.window = tk.Tk()
         frame1= tk.Frame(self.window)
         frame1.pack(fill='both')
-        # environment_canvas
+        """ environment_canvas """
         self.environment_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color1)
         self.environment_canvas.pack(side='left')
         self.environment_canvas.focus_set()
-        # mapping canvas
+        """ mapping canvas """
         self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color2)
         self.mapping_canvas.pack(side='right')
 
-
+        """draw the world"""
         self.drawing = self.create()
         self.create_walls()
         self.started = False
-    
+
+        """buttons"""
         start_button = tk.Button(self.window, text="Start", command=self.start)
         stop_button = tk.Button(self.window, text="Pause", command=self.stop)
         start_button.pack()
@@ -68,16 +70,16 @@ class Display:
         self.window.mainloop()
     
     def create(self):
-        """Create a drawing item for each solver.Sphero object
-            
-        return a dictionary with solver.Sphero objects as keys and their circle drawings as items
-        """
+        """Create a drawing item for each solver.Sphero object 
+        return a dictionary with solver.Sphero objects as keys and their circle drawings as items """
         # TODO: merge create & create walls
         return {
             sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color2) for sphero in self.spheros
         }
 
     def create_walls(self):
+        """Create a drawing item for each solver.Wall object 
+        return a dictionary with solver.Wall objects as keys and their rectangle drawings as items """
         return {
             wall: self.environment_canvas.create_rectangle(wall.position[0], wall.position[1], wall.position[2], wall.position[3], fill =self.color4) for wall in self.walls
         }
@@ -91,13 +93,13 @@ class Display:
             if len(sphero.collision_list_hor) > 0:
                 collision = sphero.collision_list_hor.pop()
                 self.mapping_canvas.create_rectangle(collision[0]-20, collision[1]-5, collision[0]+20, collision[1]+5, outline=self.color1, fill= rgb(100,100,100) )
-                            # draw collisions in mapping environment     
+            # draw collisions in mapping environment     
             if len(sphero.collision_list_vert) > 0:
                 collision = sphero.collision_list_vert.pop()
+                # TODO: cleanup this function
                 collision_int= int(round(collision[0]))
                 self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-20, collision[0]+5, collision[1]+20, outline=self.color1, fill= rgb(100,100,100) )
         self.environment_canvas.update()
-
 
     def start(self):
         """Start the animation"""
@@ -115,9 +117,10 @@ class Display:
         """Stop the animation"""
         self.started = False
 
-# Test this module
+""" Test this module """
 if __name__ == "__main__":
-    balls = [solver.Sphero(20., 20., [40.,40.], [5.,5.]), solver.Sphero(10., 10., [480.,480.], [-15.,-15.]), solver.Sphero(15., 15., [30.,470.], [10.,-10.])]
+    spheros = [solver.Sphero(20., 15., [300.,400.], [-8.,-8.]), solver.Sphero(20., 15., [40.,40.], [6.,5.]), solver.Sphero(20., 15., [40.,120.], [10.,15.])]
+    walls = [solver.Wall([100,0,110,300]), solver.Wall([400,0,410,300]), solver.Wall([250, int(size-300), 260, int(size)])]
     size = 500.
     step = 0.01
-    Display(balls, step, size)
+    Display(spheros, walls, step, size)

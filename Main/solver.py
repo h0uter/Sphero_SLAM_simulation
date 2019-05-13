@@ -31,7 +31,7 @@ class Sphero:
         """Compute kinetic energy."""
         return self.mass / 2. * np.linalg.norm(self.velocity)**2
 
-    # TODO: make sphero's re-accelerate to their maximum velocity after collision
+    # TODO: make sphero's re or de-accelerate to their maximum velocity after collision
     def compute_coll(self, ball, step):
         """Compute velocity after collision with another ball."""
         m1, m2 = self.mass, ball.mass
@@ -55,7 +55,7 @@ class Sphero:
         projy = step*abs(np.dot(v,np.array([0.,1.])))
 
         # TODO: generallize this for any wall not just edges
-        # x collision
+        """ x collision """
         if abs(pos[0])-r < projx or abs(size-pos[0])-r < projx:
             self.vafter[0] *= -1
             # TODO: make this the collision pos instead of the sphero pos
@@ -64,7 +64,7 @@ class Sphero:
             print (self.collision_list_vert[-1])
             print (projx)
             
-        # y collision
+        """ y collision """
         if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
             self.vafter[1] *= -1.
             collision_coords = np.array(pos)
@@ -84,8 +84,8 @@ class Sphero:
 
 
         # TODO: generallize this for any wall not just edges
-        #  TODO: fix sphero getting stuck on edge collision
-        # x collision from right side
+        #  TODO: fix sphero getting stuck on edge collision. possible solution: use the projx,y for comparison
+        """x collision from right side"""
         for wall in wall_list:
             if (abs(wall.position[0]-pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]) or (abs(-wall.position[2]+pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]):
                 self.vafter[0] *= -1
@@ -95,7 +95,7 @@ class Sphero:
                 print("projx: {}".format(projx))
                 print (self.collision_list_vert[-1])
 
-            # y collision
+            """ y collision """
             if abs(wall.position[3] - pos[1])-r < projy and pos[0] +r > wall.position[0] and pos[0] - r < wall.position[2]:
                 self.vafter[1] *= -1.
                 collision_coords = np.array(pos)
@@ -118,7 +118,7 @@ class Wall:
 def solve_step(sphero_list, wall_list, step, size):
     """Solve a step for every sphero."""
     
-    # Detect edge-hitting and collision of every ball
+    """ Detect edge-hitting and collision of every ball """ 
     for sphero1 in sphero_list:
         sphero1.compute_refl(step, size)
         sphero1.compute_inner_wall_refl(step, wall_list)
@@ -126,7 +126,7 @@ def solve_step(sphero_list, wall_list, step, size):
             if sphero1 is not sphero2:
                 sphero1.compute_coll(sphero2,step)
                 
-    # Compute position of every ball  
+    """ Compute position of every ball """
     for sphero in sphero_list:
         sphero.new_velocity()
         sphero.compute_step(step)
