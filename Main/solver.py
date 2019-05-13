@@ -62,7 +62,7 @@ class Sphero:
         size the medium size
         """
         r, v, pos = self.radius, self.velocity, self.position
-        # make a projection of your next step on the axis -> check if you're gonna cross over this boundary the next step
+        """"make a projection of your next step on the axis -> check if you're gonna cross over this boundary the next step"""
         projx = step*abs(np.dot(v,np.array([1.,0.])))
         projy = step*abs(np.dot(v,np.array([0.,1.])))
 
@@ -73,16 +73,16 @@ class Sphero:
             # TODO: make this the collision pos instead of the sphero pos
             collision_coords = np.array(pos)
             self.collision_list_vert.append(collision_coords)
-            print (self.collision_list_vert[-1])
-            print (projx)
+            # print (self.collision_list_vert[-1])
+            # print (projx)
             
         """y outer wall collision"""
         if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
             self.vafter[1] *= -1.
             collision_coords = np.array(pos)
-            print(projy)
+            # print(projy)
             self.collision_list_hor.append(collision_coords)
-            print (self.collision_list_hor[-1])
+            # print (self.collision_list_hor[-1])
 
     # TODO: merge compute_relf() & compute_inner_wall_refl() into 1 function
     def compute_inner_wall_refl(self, step, wall_list):
@@ -96,8 +96,10 @@ class Sphero:
         projy = step*abs(np.dot(v,np.array([0.,1.])))
 
         # TODO: generallize this for any wall not just edges
-        # TODO: fix sphero getting stuck on edge collision. possible solution: use the projx,y for comparison
-        """x inner wall collision from right side"""
+        # TODO: fix sphero getting stuck on edge collision. possible solution: use the projx for comparison. 
+        # think error is in y collision that is not being triggered correctly NOPE(?)
+        # it gets stuck on a shit load of x collisions
+        """left or right inner wall collision"""
         for wall in wall_list:
             if (abs(wall.position[0]-pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]) or (abs(-wall.position[2]+pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]):
                 self.vafter[0] *= -1
@@ -105,15 +107,22 @@ class Sphero:
                 collision_coords = np.array(pos)
                 self.collision_list_vert.append(collision_coords)
                 # print("projx: {}".format(projx))
-                print (self.collision_list_vert[-1])
+                # print (self.collision_list_vert[-1])
+                print("x collision")
 
-            """y innerwall collision"""
-            if abs(wall.position[3] - pos[1])-r < projy and pos[0] +r > wall.position[0] and pos[0] - r < wall.position[2]:
+            """bottom or top innerwall collision"""
+            # abs(bottom_y_wall - y_sphero) - radius < projection on x axis iff (x_sphero+r > left_wall) & (x_sphero +r < right_wall)
+            # if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
+            if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2] or \
+                abs(wall.position[1] - pos[1]-r) < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
+                print("y collision")
+                print("vel: {0}, vel_after: {1}".format(self.velocity, self.vafter))
                 self.vafter[1] *= -1.
                 collision_coords = np.array(pos)
                 self.collision_list_hor.append(collision_coords)
                 # print("projy: {}".format(projy))
-                print (self.collision_list_hor[-1])
+                # print (self.collision_list_hor[-1])
+                print("vel: {0}, vel_after: {1}".format(self.velocity, self.vafter))
 
 
 class Wall:
