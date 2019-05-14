@@ -76,6 +76,7 @@ class Sphero:
             self.collision_list_vert.append(collision_coords)
             # print (self.collision_list_vert[-1])
             # print (projx)
+            print("x collision")
             
         """y outer wall collision"""
         if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
@@ -84,6 +85,7 @@ class Sphero:
             # print(projy)
             self.collision_list_hor.append(collision_coords)
             # print (self.collision_list_hor[-1])
+            print("y collision")
 
     # TODO: merge compute_relf() & compute_inner_wall_refl() into 1 function
     def compute_inner_wall_refl(self, step, wall_list):
