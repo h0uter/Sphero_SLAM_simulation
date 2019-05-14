@@ -57,7 +57,7 @@ class Sphero:
         max_err = 10
         motion_model = [motion_model[0]+random.randint(-max_err, max_err), motion_model[1]+random.randint(-max_err, max_err)]
 
-    def compute_refl(self, step, size):
+    def compute_refl(self, wall_list, step, size):
         """Compute velocity after hitting an edge.
 
         step the computation step
@@ -69,7 +69,7 @@ class Sphero:
         projy = step*abs(np.dot(v,np.array([0.,1.])))
 
         # TODO: implement collision error
-        """x outer wall collision"""
+        """OUTER WALL x collision"""
         if abs(pos[0])-r < projx or abs(size-pos[0])-r < projx:
             self.vafter[0] *= -1
             # TODO: make this the collision pos instead of the sphero pos
@@ -79,7 +79,7 @@ class Sphero:
             # print (projx)
             print("x collision")
             
-        """y outer wall collision"""
+        """OUTER WALL y collision"""
         if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
             self.vafter[1] *= -1.
             collision_coords = np.array(pos)
@@ -88,22 +88,11 @@ class Sphero:
             # print (self.collision_list_hor[-1])
             print("y collision")
 
-    # TODO: merge compute_relf() & compute_inner_wall_refl() into 1 function
-    def compute_inner_wall_refl(self, step, wall_list):
-        """Compute velocity after hitting any of the inner walls.
-
-        step the computation step
-        wall_list contains locations for all the walls
-        """
-        r, v, pos = self.radius, self.velocity, self.position
-        projx = step*abs(np.dot(v,np.array([1.,0.])))
-        projy = step*abs(np.dot(v,np.array([0.,1.])))
-
         # TODO: generallize this for any wall not just edges
         # TODO: fix sphero getting stuck on edge collision. possible solution: use the projx for comparison. 
         # think error is in y collision that is not being triggered correctly NOPE(?)
         # it gets stuck on a shit load of x collisions
-        """left or right inner wall collision"""
+        """INNER WALL left or right collision"""
         for wall in wall_list:
             if (abs(wall.position[0]-pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]) or (abs(-wall.position[2]+pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]):
                 self.vafter[0] *= -1
@@ -114,7 +103,7 @@ class Sphero:
                 # print (self.collision_list_vert[-1])
                 print("x collision")
 
-            """bottom or top innerwall collision"""
+            """INNER WALL bottom or top collision"""
             # abs(bottom_y_wall - y_sphero) - radius < projection on x axis iff (x_sphero+r > left_wall) & (x_sphero +r < right_wall)
             # if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
             if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2] or \
@@ -127,6 +116,46 @@ class Sphero:
                 # print("projy: {}".format(projy))
                 # print (self.collision_list_hor[-1])
                 print("vel: {0}, vel_after: {1}".format(self.velocity, self.vafter))
+
+    # TODO: merge compute_relf() & compute_inner_wall_refl() into 1 function
+    # def compute_inner_wall_refl(self, step, wall_list):
+    #     """Compute velocity after hitting any of the inner walls.
+
+    #     step the computation step
+    #     wall_list contains locations for all the walls
+    #     """
+    #     r, v, pos = self.radius, self.velocity, self.position
+    #     projx = step*abs(np.dot(v,np.array([1.,0.])))
+    #     projy = step*abs(np.dot(v,np.array([0.,1.])))
+
+    #     # TODO: generallize this for any wall not just edges
+    #     # TODO: fix sphero getting stuck on edge collision. possible solution: use the projx for comparison. 
+    #     # think error is in y collision that is not being triggered correctly NOPE(?)
+    #     # it gets stuck on a shit load of x collisions
+    #     """left or right inner wall collision"""
+    #     for wall in wall_list:
+    #         if (abs(wall.position[0]-pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]) or (abs(-wall.position[2]+pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]):
+    #             self.vafter[0] *= -1
+    #             # TODO: make this the collision pos instead of the sphero pos
+    #             collision_coords = np.array(pos)
+    #             self.collision_list_vert.append(collision_coords)
+    #             # print("projx: {}".format(projx))
+    #             # print (self.collision_list_vert[-1])
+    #             print("x collision")
+
+    #         """bottom or top innerwall collision"""
+    #         # abs(bottom_y_wall - y_sphero) - radius < projection on x axis iff (x_sphero+r > left_wall) & (x_sphero +r < right_wall)
+    #         # if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
+    #         if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2] or \
+    #             abs(wall.position[1] - pos[1]-r) < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
+    #             print("y collision")
+    #             print("vel: {0}, vel_after: {1}".format(self.velocity, self.vafter))
+    #             self.vafter[1] *= -1.
+    #             collision_coords = np.array(pos)
+    #             self.collision_list_hor.append(collision_coords)
+    #             # print("projy: {}".format(projy))
+    #             # print (self.collision_list_hor[-1])
+    #             print("vel: {0}, vel_after: {1}".format(self.velocity, self.vafter))
 
 
 class Wall:
@@ -144,8 +173,8 @@ def solve_step(sphero_list, wall_list, step, size):
 
     """Detect edge-hitting and collision of every sphero""" 
     for sphero1 in sphero_list:
-        sphero1.compute_refl(step, size)
-        sphero1.compute_inner_wall_refl(step, wall_list)
+        sphero1.compute_refl(wall_list, step, size)
+        # sphero1.compute_inner_wall_refl(step, wall_list)
         for sphero2 in sphero_list:
             if sphero1 is not sphero2:
                 sphero1.compute_collision(sphero2,step)
