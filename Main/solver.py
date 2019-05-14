@@ -19,6 +19,7 @@ class Sphero:
         self.vafter = np.copy(velocity) # temporary storage for velocity of next step
         self.collision_list_hor = []
         self.collision_list_vert = []
+ 
 
         """motion model = [x,y] : 'gps' position + accumulation of translation errors occuring at each collision"""
         # TODO: use motion_model to draw map
