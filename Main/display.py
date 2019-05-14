@@ -87,10 +87,8 @@ class Display:
     def update(self):
         """Update the drawing items for a time step"""
         solver.solve_step(self.spheros, self.walls, self.step, self.size)
-        global remembrance
-        remembrance = []
+
         for sphero in self.spheros:
-            remembrance.append(sphero.position)
             self.environment_canvas.coords_circle(self.drawing[sphero], sphero.position[0], sphero.position[1], sphero.radius)
             # draw collisions in mapping environment
             
@@ -121,7 +119,6 @@ class Display:
     def stop(self):
         """Stop the animation"""
         self.started = False
-        print remembrance
 
 
 """Test this module"""
