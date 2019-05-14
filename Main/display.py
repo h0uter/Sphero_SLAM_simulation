@@ -1,6 +1,11 @@
 import tkinter as tk
 import solver
 
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+
 def _create_circle(self, x, y, r, **kwargs):
     """Create a circle
         
@@ -44,17 +49,30 @@ class Display:
         self.color3 = "#D9F3FF"
         self.color4 = "#D9F3FF" #color wall
         
-        """window"""
+        """display window"""
         self.window = tk.Tk()
         frame1= tk.Frame(self.window)
         frame1.pack(fill='both')
+
         """environment_canvas"""
         self.environment_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color1)
         self.environment_canvas.pack(side='left')
         self.environment_canvas.focus_set()
+
         """mapping canvas"""
         self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color2)
-        self.mapping_canvas.pack(side='right')
+        self.mapping_canvas.pack(side='left')
+
+        """error plotting canvas """
+        fig = Figure(figsize=(5,5), dpi=100)
+        a = fig.add_subplot(111)
+        # TODO: make this graph update
+        # a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        a.plot([1,self.spheros[0].position[0]],[1,self.spheros[0].position[1]])
+        root = tk.Canvas(frame1,width=size,height=size,bg="white")
+        root.pack(side='right')
+        self.plot_canvas = FigureCanvasTkAgg(fig, master=root)
+        self.plot_canvas.get_tk_widget().pack(side='right')
 
         """draw the world"""
         self.drawing = self.create()
@@ -66,7 +84,7 @@ class Display:
         stop_button = tk.Button(self.window, text="Pause", command=self.stop)
         start_button.pack()
         stop_button.pack()
-    
+
         self.window.mainloop()
     
     def create(self):
@@ -114,7 +132,6 @@ class Display:
         if self.started:
             self.update()
             self.window.after(0, self.animate)
-
 
     def stop(self):
         """Stop the animation"""

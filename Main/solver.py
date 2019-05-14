@@ -52,7 +52,8 @@ class Sphero:
     def collision_error(self, motion_model):
         """adds a random translation error to the motion model on each collision"""
         # TODO: requirements: 
-        # random error away from wall, not into
+        # error 5 in x direction only
+        # error should be very distinct
         max_err = 10
         motion_model = [motion_model[0]+random.randint(-max_err, max_err), motion_model[1]+random.randint(-max_err, max_err)]
 
@@ -153,3 +154,5 @@ def solve_step(sphero_list, wall_list, step, size):
     for sphero in sphero_list:
         sphero.new_velocity()
         sphero.compute_step(step)
+
+    
