@@ -1,7 +1,7 @@
 import numpy.random as rd
 import numpy as np
-from display import *
-from solver import *
+from display import Display
+from solver import Sphero, Wall
 
 
 """can generate a list of different sizes balls if needed"""
