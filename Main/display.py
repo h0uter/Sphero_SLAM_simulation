@@ -5,6 +5,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+import matplotlib.pyplot as plt
 
 def _create_circle(self, x, y, r, **kwargs):
     """Create a circle
@@ -64,15 +65,14 @@ class Display:
         self.mapping_canvas.pack(side='left')
 
         """error plotting canvas """
-        fig = Figure(figsize=(5,5), dpi=100)
-        a = fig.add_subplot(111)
-        # TODO: make this graph update
         # a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
-        a.plot([1,self.spheros[0].position[0]],[1,self.spheros[0].position[1]])
-        root = tk.Canvas(frame1,width=size,height=size,bg="white")
-        root.pack(side='right')
-        self.plot_canvas = FigureCanvasTkAgg(fig, master=root)
-        self.plot_canvas.get_tk_widget().pack(side='right')
+        errormap = tk.Canvas(frame1,width=size,height=size,bg="white")
+        errormap.pack(side='right')
+        fig = plt.figure(figsize=(6.15,6.15),facecolor='w',edgecolor='w')
+        axis = plt,axis([0,size,0, size])
+        self.error_canvas = FigureCanvasTkAgg(fig, master=errormap)
+        self.error_canvas.get_tk_widget().pack(side='right')
+
 
         """draw the world"""
         self.drawing = self.create()
@@ -87,6 +87,8 @@ class Display:
 
         self.window.mainloop()
     
+    """ End of: def __init__  """
+
     def create(self):
         """Create a drawing item for each solver.Sphero object 
         return a dictionary with solver.Sphero objects as keys and their circle drawings as items """
@@ -102,10 +104,17 @@ class Display:
             wall: self.environment_canvas.create_rectangle(wall.position[0], wall.position[1], wall.position[2], wall.position[3], fill =self.color4) for wall in self.walls
         }
 
+    def update_errormap(self):
+        "Create Error figure V. Halithan"
+        fig = Figure(figsize=(5,5), dpi=100)
+        a = fig.add_subplot(111)
+        plt.plot([1,self.spheros[0].position[0]],[1,self.spheros[0].position[1]])
+        plt.gcf().canvas.draw()
+
     def update(self):
         """Update the drawing items for a time step"""
         solver.solve_step(self.spheros, self.walls, self.step, self.size)
-
+        
         for sphero in self.spheros:
             self.environment_canvas.coords_circle(self.drawing[sphero], sphero.position[0], sphero.position[1], sphero.radius)
             # draw collisions in mapping environment
@@ -130,7 +139,8 @@ class Display:
     def animate(self):
         """Animate the drawing items"""
         if self.started:
-            self.update()
+            self.update_errormap()
+            self.update() 
             self.window.after(0, self.animate)
 
     def stop(self):
