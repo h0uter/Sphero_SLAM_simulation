@@ -116,8 +116,6 @@ class Display:
             # draw collisions in mapping environment     
             if len(sphero.collision_list_vert) > 0:
                 collision = sphero.collision_list_vert.pop()
-                # TODO: cleanup this function
-                collision_int= int(round(collision[0]))
                 self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-20, collision[0]+5, collision[1]+20, outline=self.color1, fill= rgb(100,100,100) )
         self.environment_canvas.update()
 
