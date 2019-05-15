@@ -26,33 +26,34 @@ class Kalman:
 	http://www.njfunk.com/research/courses/652-probability-report.pdf
 	"""
 
-	def __init__(self, state_dim, obs_dim):
+	def __init__(self, state_dim, observation_dim):
 		self.state_dim = state_dim
-		self.obs_dim   = obs_dim
+		self.obs_dim   = observation_dim
 		
-		self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			  # Process noise
-		self.R		 = np.matrix( np.eye(obs_dim)*0.01 )			  # Observation noise
-		self.A		 = np.matrix( np.eye(state_dim) )			  # Transition matrix
-		self.H		 = np.matrix( np.zeros((obs_dim, state_dim)) )		  # Measurement matrix
-		self.K		 = np.matrix( np.zeros_like(self.H.T) )			  # Gain matrix
-		self.P		 = np.matrix( np.zeros_like(self.A) )			  # State covariance
-		self.x		 = np.matrix( np.zeros((state_dim, 1)) )		  # The actual state of the system
+		self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			            # Process noise
+		self.R		 = np.matrix( np.eye(observation_dim)*0.01 )			    # Observation noise
+		self.A		 = np.matrix( np.eye(state_dim) )			                # Transition matrix
+		self.H		 = np.matrix( np.zeros((observation_dim, state_dim)) )      # Measurement matrix
+		self.K		 = np.matrix( np.zeros_like(self.H.T) )			            # Gain matrix
+		self.P		 = np.matrix( np.zeros_like(self.A) )			            # State covariance
+		self.x		 = np.matrix( np.zeros((state_dim, 1)) )		            # The actual state of the system
 	
-		if obs_dim == state_dim/3:
+		if observation_dim == state_dim/3:
 			# We'll go ahead and make this a position-predicting matrix with velocity & acceleration if we've got the right combination of dimensions
 			# The model is : x( t + 1 ) = x( t ) + v( t ) + a( t ) / 2
 
-			idx = np.r_[0:obs_dim]
-			positionIdx = np.ix_(idx, idx)
-			velocityIdx = np.ix_(idx,idx+obs_dim)
-			accelIdx	= np.ix_(idx, idx+obs_dim*2)
-			accelAndVelIdx = np.ix_(idx+obs_dim, idx+obs_dim*2)
+			idx                     = np.r_[0:observation_dim]
+			positionIdx             = np.ix_(idx, idx)
+			velocityIdx             = np.ix_(idx,idx+observation_dim)
+			accelIdx	            = np.ix_(idx, idx+observation_dim*2)
+			accelAndVelIdx          = np.ix_(idx+observation_dim, idx+observation_dim*2)
 			
-			self.H[positionIdx]		= np.eye(obs_dim)
+			self.H[positionIdx]		= np.eye(observation_dim)
 			self.A				    = np.eye(state_dim)
-			self.A[velocityIdx]		+= np.eye(obs_dim)
-			self.A[accelIdx]		+= 0.5 * np.eye(obs_dim)
-			self.A[accelAndVelIdx]  += np.eye(obs_dim)
+			self.A[velocityIdx]		+= np.eye(observation_dim)
+			self.A[accelIdx]		+= 0.5 * np.eye(observation_dim)
+			self.A[accelAndVelIdx]  += np.eye(observation_dim)
+        
 			
 	def update(self, obs):
 		
@@ -64,7 +65,7 @@ class Kalman:
 		self.P	= self.A * self.P * self.A.T + self.Q
 		
 		# Compute the optimal Kalman gain factor
-		self.K = self.P * self.H.T * np.inv(self.H * self.P * self.H.T + self.R)
+		self.K = self.P * self.H.T * np.linalg.inv(self.H * self.P * self.H.T + self.R)
 		
 		# Correction based on observation
 		self.x = self.x + self.K * ( obs - self.H * self.x )
@@ -73,3 +74,18 @@ class Kalman:
 
 	def predict(self):
 		return np.asarray(self.H*self.x)
+
+
+if __name__ == "__main__":
+    # e.g., tracking an (x,y) point over time
+    k = Kalman(6, 2)
+
+    # when you get a new observation 
+    for i in range(11):
+        someNewPoint = np.r_[i, 2*i]
+        k.update(someNewPoint)
+        # print(k)
+
+        # and when you want to make a new prediction
+        predicted_location = k.predict()
+        print (predicted_location)
