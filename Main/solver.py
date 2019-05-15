@@ -100,8 +100,8 @@ class Sphero:
                 print("x collision")
 
             """INNER WALL bottom or top collision"""
-          if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2] or \
-                abs(wall.position[1] - pos[1]-r) < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
+            if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2] or \
+            abs(wall.position[1] - pos[1]-r) < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
                 print("y collision")
                 print("vel: {0}, vel_after: {1}".format(self.velocity, self.vafter))
                 self.vafter[1] *= -1.
