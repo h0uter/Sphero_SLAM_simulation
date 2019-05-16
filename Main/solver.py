@@ -49,28 +49,27 @@ class Sphero:
         mu, sigma = 0, 3 # mean and standard deviation
         gauss_noise = np.random.normal(mu, sigma)
         # gauss_noise = np.array( [np.random.normal(mu, sigma), np.random.normal(mu, sigma)] )
-        # print (gauss_noise)
-        self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise)
+        # self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise) 
+        self.speed_sensor_x_estimate += step * (self.velocity[0])
         '''kalman'''
         k = Kalman(3, 1)
-        # predicted_path = []
 
-        someNewPoint = np.r_[self.speed_sensor_x_estimate]
-        print("someNewPoint: {0}".format(someNewPoint))
+        # someNewPoint = np.r_[self.speed_sensor_x_estimate]
+        someNewPoint = self.speed_sensor_x_estimate*2
+        # print("someNewPoint: {0}".format(someNewPoint))
         k.update(someNewPoint)
-        # print(k)
 
         # and when you want to make a new prediction
         self.predicted_location = k.predict()
         # predicted_path.append(predicted_location)
-        # print (self.predicted_location)
-        # print("prediction {0}: [{1}]".format(i, self.predicted_location[0][0]))
+        error = self.predicted_location - self.position[0]
 
         print("""
         speed sensor est pos:  {0}
         actual pos:            {1}
         filtered pos:          {2}
-        """.format(self.speed_sensor_x_estimate, self.position, self.predicted_location))
+        error:                 {3}
+        """.format(self.speed_sensor_x_estimate, self.position[0], self.predicted_location, error))
 
     def computeEnergy(self, ball_list):
         """Compute kinetic energy."""

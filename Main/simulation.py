@@ -36,8 +36,9 @@ if __name__ == "__main__":
 
     """1D filter test"""
     step = 0.05
-    spheros = [Sphero(m, r, [20., 250.], [-10.,0.])]
-    walls = [Wall([300,0,310,300])]
+    spheros = [Sphero(m, r, [20., 250.], [1.,0.])]
+    # walls = [Wall([300,0,310,300])]
+    walls = []
 
     """run the simulation with given params"""
     Display(spheros, walls, step, size)
