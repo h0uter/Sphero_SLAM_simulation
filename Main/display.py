@@ -1,5 +1,6 @@
 import tkinter as tk
 import solver
+import copy
 
 import matplotlib
 matplotlib.use("TkAgg")
@@ -35,6 +36,9 @@ tk.Canvas.coords_circle = _coords_circle
 def rgb(r, g, b):
     return "#%s%s%s" % tuple([hex(c)[2:].rjust(2, "0") for c in (r, g, b)])
 
+# to remember all positions
+remmember = []
+remmember_last = [140.,320.]
 class Display:
     """Define the window used to display a simulation"""
 
@@ -104,12 +108,29 @@ class Display:
             wall: self.environment_canvas.create_rectangle(wall.position[0], wall.position[1], wall.position[2], wall.position[3], fill =self.color4) for wall in self.walls
         }
 
+
     def update_errormap(self):
         "Create Error figure V. Halithan"
+        global remmember_last
+
         fig = Figure(figsize=(5,5), dpi=100)
+
+        remmember=  self.spheros[0].position
+
+        print '\n\nremmember={0}' .format(remmember)
+        print 'remmemberlast={0}' .format(remmember_last)   
+
         a = fig.add_subplot(111)
-        plt.plot([1,self.spheros[0].position[0]],[1,500-self.spheros[0].position[1]])
+        plt.plot([remmember_last[0],remmember[0]],[500-remmember_last[1],500-remmember[1]])
         plt.gcf().canvas.draw()
+        
+        remmember_last = copy.deepcopy (self.spheros[0].position)
+        
+        print 'remmemberlast={0}' .format(remmember_last)
+        
+        
+        
+        
 
     def update(self):
         """Update the drawing items for a time step"""
