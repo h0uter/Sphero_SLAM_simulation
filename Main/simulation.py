@@ -35,7 +35,7 @@ if __name__ == "__main__":
     # walls = [Wall([100,0,110,300]), Wall([400,0,410,300]), Wall([250, int(size-300), 260, int(size)])]
 
     """1D filter test"""
-    step = 0.005
+    step = 0.05
     spheros = [Sphero(m, r, [20., 250.], [-10.,0.])]
     walls = [Wall([300,0,310,300])]
 

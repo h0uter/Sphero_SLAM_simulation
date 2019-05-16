@@ -1,6 +1,11 @@
 import numpy as np
 import random
 
+# motion model
+import scipy.integrate
+from numpy import exp
+from kalman import Kalman
+
 class Sphero:
     """Define physics of elastic collision."""
     
@@ -26,8 +31,10 @@ class Sphero:
  
 
         """motion model = [acc_x, acc_y] : virt sensor accerleration + gaussian noise"""
-        # TODO: make a motion model based on virtual accelerometer data
-        self.motion_model = self.position
+        # TODO: 1 make motion model based on virt speed sensor
+        # TODO: 2 make a motion model based on virtual accelerometer data
+        self.speed_sensor_x_estimate = np.array(position[0])
+        self.predicted_location = np.array(position[0])
 
     def compute_step(self, step):
         """Compute position of next step."""
@@ -37,7 +44,34 @@ class Sphero:
         """Store velocity of next step."""
         self.velocity = self.vafter
 
-        
+    def update_motion_model(self, step):
+        """Compute position of next step based on velocity + noise"""
+        mu, sigma = 0, 3 # mean and standard deviation
+        gauss_noise = np.random.normal(mu, sigma)
+        # gauss_noise = np.array( [np.random.normal(mu, sigma), np.random.normal(mu, sigma)] )
+        # print (gauss_noise)
+        self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise)
+        '''kalman'''
+        k = Kalman(3, 1)
+        # predicted_path = []
+
+        someNewPoint = np.r_[self.speed_sensor_x_estimate]
+        print("someNewPoint: {0}".format(someNewPoint))
+        k.update(someNewPoint)
+        # print(k)
+
+        # and when you want to make a new prediction
+        self.predicted_location = k.predict()
+        # predicted_path.append(predicted_location)
+        # print (self.predicted_location)
+        # print("prediction {0}: [{1}]".format(i, self.predicted_location[0][0]))
+
+        print("""
+        speed sensor est pos:  {0}
+        actual pos:            {1}
+        filtered pos:          {2}
+        """.format(self.speed_sensor_x_estimate, self.position, self.predicted_location))
+
     def computeEnergy(self, ball_list):
         """Compute kinetic energy."""
         return self.mass / 2. * np.linalg.norm(self.velocity)**2
@@ -116,7 +150,7 @@ class Wall:
         
         position = [x1, y1, x2, y2]
         """
-        self.position = position        
+        self.position = position
 
 
 def solve_step(sphero_list, wall_list, step, size):
@@ -133,3 +167,4 @@ def solve_step(sphero_list, wall_list, step, size):
     for sphero in sphero_list:
         sphero.new_velocity()
         sphero.compute_step(step)
+        sphero.update_motion_model(step)
