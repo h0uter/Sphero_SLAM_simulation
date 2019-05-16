@@ -1,4 +1,5 @@
 import numpy as np
+from pprint import pprint
 
 class Kalman:
 	"""
@@ -75,17 +76,25 @@ class Kalman:
 	def predict(self):
 		return np.asarray(self.H*self.x)
 
-
+"""testing kalman funtionality"""
 if __name__ == "__main__":
     # e.g., tracking an (x,y) point over time
-    k = Kalman(6, 2)
+    k = Kalman(3, 1)
+    # k = Kalman(6, 2)
+    predicted_path = []
 
     # when you get a new observation 
-    for i in range(11):
-        someNewPoint = np.r_[i, 2*i]
+    for i in range(0,30):
+        someNewPoint = np.r_[i]
+        # someNewPoint = np.r_[i, 2*i]
         k.update(someNewPoint)
         # print(k)
 
         # and when you want to make a new prediction
         predicted_location = k.predict()
-        print (predicted_location)
+        predicted_path.append(predicted_location)
+        # print (predicted_location)
+        print("prediction {0}: [{1}]".format(i, predicted_location[0][0]))
+        # print("prediction: [{0}, {1}]".format(predicted_location[0][0], predicted_location[1][0]))
+
+    # pprint(predicted_path)

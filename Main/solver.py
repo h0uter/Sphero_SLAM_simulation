@@ -11,18 +11,22 @@ class Sphero:
         radius the radius of sphero
         position the position vector of sphero
         velocity the velocity vector of sphero
+        acceleration vector of the sphero
         """
         self.mass = mass
         self.radius = radius
         self.position = np.array(position)
         self.velocity = np.array(velocity)
+        # TODO: acelleration
+        self.acceleration =np.array([2,2])
+
         self.vafter = np.copy(velocity) # temporary storage for velocity of next step
         self.collision_list_hor = []
         self.collision_list_vert = []
  
 
-        """motion model = [x,y] : 'gps' position + accumulation of translation errors occuring at each collision"""
-        # TODO: use motion_model to draw map
+        """motion model = [acc_x, acc_y] : virt sensor accerleration + gaussian noise"""
+        # TODO: make a motion model based on virtual accelerometer data
         self.motion_model = self.position
 
     def compute_step(self, step):
@@ -32,6 +36,7 @@ class Sphero:
     def new_velocity(self):
         """Store velocity of next step."""
         self.velocity = self.vafter
+
         
     def computeEnergy(self, ball_list):
         """Compute kinetic energy."""
@@ -49,14 +54,6 @@ class Sphero:
         if norm-r1-r2 < step*abs(np.dot(v1-v2, di))/norm:
             self.vafter = v1 - 2. * m2/(m1+m2) * np.dot(v1-v2, di) / (np.linalg.norm(di)**2.) * di
 
-    # def collision_error(self, motion_model):
-    #     """adds a random translation error to the motion model on each collision"""
-    #     # TODO: requirements: 
-    #     # error 5 in x direction only
-    #     # error should be very distinct
-    #     max_err = 10
-    #     motion_model = [motion_model[0]+random.randint(-max_err, max_err), motion_model[1]+random.randint(-max_err, max_err)]
-
     def compute_refl(self, wall_list, step, size):
         """Compute velocity after hitting an edge.
 
@@ -68,7 +65,6 @@ class Sphero:
         projx = step*abs(np.dot(v,np.array([1.,0.])))
         projy = step*abs(np.dot(v,np.array([0.,1.])))
 
-        # TODO: implement collision error
         """OUTER WALL x collision"""
         if abs(pos[0])-r < projx or abs(size-pos[0])-r < projx:
             self.vafter[0] *= -1
@@ -92,6 +88,7 @@ class Sphero:
             """INNER WALL left or right collision"""
             if (abs(wall.position[0]-pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]) or (abs(-wall.position[2]+pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]):
                 self.vafter[0] *= -1
+                # TODO: invert acceleration on collision
                 # TODO: make this the collision pos instead of the sphero pos
                 collision_coords = np.array(pos)
                 self.collision_list_vert.append(collision_coords)
