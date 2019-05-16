@@ -34,7 +34,7 @@ class Kalman:
 		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			            # orig Process noise
 		self.Q 		 = np.matrix( np.eye(state_dim) )			            # Process noise
 		# self.R		 = np.matrix( np.eye(observation_dim)*0.01 )			    # orig Observation noise
-		self.R		 = np.matrix( np.eye(observation_dim) )			    # Observation noise
+		self.R		 = np.matrix( np.eye(observation_dim)*0.1 )			    # Observation noise
 		self.A		 = np.matrix( np.eye(state_dim) )			                # Transition matrix
 		self.H		 = np.matrix( np.zeros((observation_dim, state_dim)) )      # Measurement matrix
 		self.K		 = np.matrix( np.zeros_like(self.H.T) )			            # Gain matrix
@@ -81,7 +81,7 @@ class Kalman:
 """testing kalman funtionality"""
 if __name__ == "__main__":
     # e.g., tracking an (x,y) point over time
-    k = Kalman(2, 1)
+    k = Kalman(3, 1)
     # k = Kalman(6, 2)
     predicted_path = []
 

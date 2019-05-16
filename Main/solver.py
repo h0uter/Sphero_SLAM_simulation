@@ -34,6 +34,7 @@ class Sphero:
         # TODO: 1 make motion model based on virt speed sensor
         # TODO: 2 make a motion model based on virtual accelerometer data
         self.speed_sensor_x_estimate = np.array(position[0])
+        self.acc_sensor_x_estimate = np.array(position[0])
         self.predicted_location = np.array(position[0])
 
     def compute_step(self, step):
@@ -46,28 +47,33 @@ class Sphero:
 
     def update_motion_model(self, step):
         """Compute position of next step based on velocity + noise"""
-        mu, sigma = 0, 3 # mean and standard deviation
+        mu, sigma = 0, 0.5 # mean and standard deviation
         gauss_noise = np.random.normal(mu, sigma)
         # gauss_noise = np.array( [np.random.normal(mu, sigma), np.random.normal(mu, sigma)] )
-        # self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise) 
-        self.speed_sensor_x_estimate += step * (self.velocity[0])
+        """velocity sensor based x pos estimation"""
+        # self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise) #once integrated error
+        self.speed_sensor_x_estimate += step * (self.velocity[0]) +gauss_noise  #not integrated error
+        # self.speed_sensor_x_estimate += step * (self.velocity[0])             #no error
+
+        """acc sensor based x pos estimation"""
+        self.acc_sensor_x_estimate += step * self.velocity[0] + 0.5* self.acceleration**2
+
         '''kalman'''
         k = Kalman(3, 1)
 
-        # someNewPoint = np.r_[self.speed_sensor_x_estimate]
-        someNewPoint = self.speed_sensor_x_estimate*2
+        someNewPoint = np.r_[self.speed_sensor_x_estimate]
+        # someNewPoint = self.speed_sensor_x_estimate
         # print("someNewPoint: {0}".format(someNewPoint))
         k.update(someNewPoint)
 
         # and when you want to make a new prediction
         self.predicted_location = k.predict()
-        # predicted_path.append(predicted_location)
         error = self.predicted_location - self.position[0]
 
         print("""
         speed sensor est pos:  {0}
         actual pos:            {1}
-        filtered pos:          {2}
+        predictedlocation :    {2}
         error:                 {3}
         """.format(self.speed_sensor_x_estimate, self.position[0], self.predicted_location, error))
 
