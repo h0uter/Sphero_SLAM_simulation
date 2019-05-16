@@ -69,7 +69,7 @@ class Display:
         errormap = tk.Canvas(frame1,width=size,height=size,bg="white")
         errormap.pack(side='right')
         fig = plt.figure(figsize=(6.15,6.15),facecolor='w',edgecolor='w')
-        axis = plt,axis([0,size,0, size])
+        axis = plt.axis([0,size,0, size])
         self.error_canvas = FigureCanvasTkAgg(fig, master=errormap)
         self.error_canvas.get_tk_widget().pack(side='right')
 
@@ -108,7 +108,7 @@ class Display:
         "Create Error figure V. Halithan"
         fig = Figure(figsize=(5,5), dpi=100)
         a = fig.add_subplot(111)
-        plt.plot([1,self.spheros[0].position[0]],[1,self.spheros[0].position[1]])
+        plt.plot([1,self.spheros[0].position[0]],[1,500-self.spheros[0].position[1]])
         plt.gcf().canvas.draw()
 
     def update(self):
