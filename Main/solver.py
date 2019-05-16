@@ -23,7 +23,7 @@ class Sphero:
         self.position = np.array(position)
         self.velocity = np.array(velocity)
         # TODO: acelleration
-        self.acceleration =np.array([2,2])
+        # self.acceleration = [0.5, 0.5]
 
         self.vafter = np.copy(velocity) # temporary storage for velocity of next step
         self.collision_list_hor = []
@@ -34,12 +34,13 @@ class Sphero:
         # TODO: 1 make motion model based on virt speed sensor
         # TODO: 2 make a motion model based on virtual accelerometer data
         self.speed_sensor_x_estimate = np.array(position[0])
-        self.acc_sensor_x_estimate = np.array(position[0])
+        # self.acc_sensor_x_estimate = np.array(position[0])
         self.predicted_location = np.array(position[0])
 
     def compute_step(self, step):
         """Compute position of next step."""
-        self.position += step * self.velocity
+        self.position += step * self.velocity                               # velocity, position
+        # self.position += step * self.velocity + np.square(self.acceleration)# TODO: acceleration, velocity, position
         
     def new_velocity(self):
         """Store velocity of next step."""
@@ -55,17 +56,15 @@ class Sphero:
         self.speed_sensor_x_estimate += step * (self.velocity[0]) +gauss_noise  #not integrated error
         # self.speed_sensor_x_estimate += step * (self.velocity[0])             #no error
 
-        """acc sensor based x pos estimation"""
-        self.acc_sensor_x_estimate += step * self.velocity[0] + 0.5* self.acceleration**2
+        """TODO: acc sensor based x pos estimation"""
+        # self.acc_sensor_x_estimate += step * self.velocity[0] + 0.5*self.acceleration**2
 
         '''kalman'''
         k = Kalman(3, 1)
-
         someNewPoint = np.r_[self.speed_sensor_x_estimate]
         # someNewPoint = self.speed_sensor_x_estimate
         # print("someNewPoint: {0}".format(someNewPoint))
         k.update(someNewPoint)
-
         # and when you want to make a new prediction
         self.predicted_location = k.predict()
         error = self.predicted_location - self.position[0]
