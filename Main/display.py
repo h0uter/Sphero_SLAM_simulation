@@ -32,7 +32,7 @@ def _coords_circle(self, target, x, y, r, **kwargs):
     return the circle drawing with updated coordinates
     """
     return self.coords(target, x-r, y-r, x+r, y+r, **kwargs)
-    
+
 tk.Canvas.coords_circle = _coords_circle
 
 def rgb(r, g, b):
@@ -123,7 +123,7 @@ class Display:
 
         current_pos1=  self.spheros[0].position
 
-        if abs(current_pos1[0] - last_pos1[0]) > update_interval:
+        if abs(current_pos1[0] - last_pos1[0]) > update_interval or abs(current_pos1[1] - last_pos1[1])   > update_interval:
             plt.plot([last_pos1[0],current_pos1[0]],[500-last_pos1[1],500-current_pos1[1]], 'r--')
             last_pos1 = copy.deepcopy (self.spheros[0].position)
             self.error_canvas.draw()
@@ -161,7 +161,7 @@ class Display:
     def animate(self):
         """Animate the drawing items"""
         if self.started:
-            # self.update_errormap()     # To Stop the ErrorMapping, change this to a text
+            self.update_errormap()     # To Stop the ErrorMapping, change this to a text
             self.update() 
             self.window.after(0, self.animate)
 
