@@ -69,8 +69,12 @@ class Display:
         # TODO: make this graph update
         # a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
         a.plot([1,self.spheros[0].position[0]],[1,self.spheros[0].position[1]])
+        a.set_title('Error Tracking Map')
+        a.set_xlabel('Position on X')
+        a.set_ylabel('Position on Y')
         root = tk.Canvas(frame1,width=size,height=size,bg="white")
         root.pack(side='right')
+        
         self.plot_canvas = FigureCanvasTkAgg(fig, master=root)
         self.plot_canvas.get_tk_widget().pack(side='right')
 

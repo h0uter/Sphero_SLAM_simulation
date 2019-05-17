@@ -62,7 +62,7 @@ class Sphero:
         # self.speed_sensor_x_estimate += step * (self.velocity[0])             #no error
         """acceleration sensor based x pos estimation"""
         # self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise) #once integrated error
-        self.speed_sensor _x_estimate += step * (self.velocity[0]) +gauss_noise  #not integrated error
+        self.speed_sensor_x_estimate += step * (self.velocity[0]) +gauss_noise  #not integrated error
         # self.speed_sensor_x_estimate += step * (self.velocity[0])             #no error
 
         """TODO: acc sensor based x pos estimation"""
