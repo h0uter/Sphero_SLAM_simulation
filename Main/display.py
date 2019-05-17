@@ -118,10 +118,10 @@ class Display:
         remmember=  self.spheros[0].position
 
         print '\n\nremmember={0}' .format(remmember)
-        print 'remmemberlast={0}' .format(remmember_last)   
+        print 'remmemberlast={0}' .format(remmember_last)
 
         a = fig.add_subplot(111)
-        plt.plot([remmember_last[0],remmember[0]],[500-remmember_last[1],500-remmember[1]])
+        plt.plot([remmember_last[0],remmember[0]],[500-remmember_last[1],500-remmember[1]], color = 'green')
         plt.gcf().canvas.draw()
         
         remmember_last = copy.deepcopy (self.spheros[0].position)
