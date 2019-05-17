@@ -31,10 +31,10 @@ class Kalman:
 		self.state_dim = state_dim
 		self.obs_dim   = observation_dim
 		
-		self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			            # orig Process noise
-		# self.Q 		 = np.matrix( np.eye(state_dim) )			            # Process noise
-		self.R		 = np.matrix( np.eye(observation_dim)*0.01 )			    # orig Observation noise
-		# self.R		 = np.matrix( np.eye(observation_dim)*0.1 )			    # Observation noise
+		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			            # orig Process noise
+		self.Q 		 = np.matrix( np.eye(state_dim) )			            # 0 Process noise
+		# self.R		 = np.matrix( np.eye(observation_dim)*0.01 )			    # orig Observation noise
+		self.R		 = np.matrix( np.eye(observation_dim) )			    # 0 Observation noise
 		self.A		 = np.matrix( np.eye(state_dim) )			                # Transition matrix
 		self.H		 = np.matrix( np.zeros((observation_dim, state_dim)) )      # Measurement matrix
 		self.K		 = np.matrix( np.zeros_like(self.H.T) )			            # Gain matrix
@@ -84,10 +84,14 @@ if __name__ == "__main__":
     k = Kalman(3, 1)
     # k = Kalman(6, 2)
     predicted_path = []
+    mu, sigma = 0, 0.5 # mean and standard deviation
+
 
     # when you get a new observation 
     for i in range(0,30):
-        someNewPoint = np.r_[i]
+        gauss_noise = np.random.normal(mu, sigma)
+        # someNewPoint = np.r_[i]
+        someNewPoint = np.r_[i+gauss_noise]
         # someNewPoint = np.r_[i, 2*i]
         k.update(someNewPoint)
         # print(k)
