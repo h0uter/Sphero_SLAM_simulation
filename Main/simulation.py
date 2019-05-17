@@ -18,16 +18,18 @@ def init_list(N):
     return balls
 
 if __name__ == "__main__":
+    
+    step = 0.05
 
     spheros = [ Sphero(m, r, startposition_ball1, [-10.,-10.]), 
                 Sphero(m, r, startposition_ball2, [10.,10.]), 
                 Sphero(m, r, startposition_ball3, [10.,15.])]
 
     """1D filter test"""
-    step = 0.05
-    spheros = [Sphero(m, r, [20., 250.], [1.,0.])]
     # walls = [Wall([300,0,310,300])]
     # walls = []
+
+    walls = [Wall([100,0,110,300]), Wall([400,0,410,300]), Wall([250, int(size-300), 260, int(size)])]
 
     """run the simulation with given params"""
     Display(spheros, walls, step, size)

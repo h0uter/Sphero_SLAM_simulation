@@ -32,6 +32,7 @@ def _coords_circle(self, target, x, y, r, **kwargs):
     return the circle drawing with updated coordinates
     """
     return self.coords(target, x-r, y-r, x+r, y+r, **kwargs)
+    
 tk.Canvas.coords_circle = _coords_circle
 
 def rgb(r, g, b):
@@ -160,7 +161,7 @@ class Display:
     def animate(self):
         """Animate the drawing items"""
         if self.started:
-            self.update_errormap()
+            # self.update_errormap()     # To Stop the ErrorMapping, change this to a text
             self.update() 
             self.window.after(0, self.animate)
 
