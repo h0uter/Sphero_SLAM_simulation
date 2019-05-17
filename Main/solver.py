@@ -22,36 +22,32 @@ class Sphero:
         self.radius = radius
         self.position = np.array(position)
         self.velocity = np.array(velocity)
-        # TODO: non constant accelleration
-        self.acceleration = np.array([0.1, 0])
+        self.acceleration = np.array([11, 15])    # constant acceleration
 
-        self.vafter = np.copy(velocity) # temporary storage for velocity of next step
-        self.acc_after = np.copy(self.acceleration) # temporary storage for velocity of next step
+        self.vafter = np.copy(velocity) # temporary storage for velocity direction change if a collision would occur
+        self.acc_after = np.copy(self.acceleration) # temporary storage for acceleration in case of collision
 
         self.collision_list_hor = []
         self.collision_list_vert = []
 
-        """motion model = [acc_x, acc_y] : virt sensor accerleration + gaussian noise"""
-        # TODO: 1 make motion model based on virt speed sensor
-        # TODO: 2 make a motion model based on virtual accelerometer data
-        self.speed_sensor_x_estimate = np.array(position[0])
-        # self.acc_sensor_x_estimate = np.array(position[0])
-        self.predicted_location = np.array(position[0])
+        # TODO: complete
+        """motion model = [acc_x, acc_y] : virt sensor + gaussian noise --> position [x, y]"""
+        self.speed_sensor_x_estimate = np.array(position[0]) # estimate based on speed
+        # self.acc_sensor_x_estimate = np.array(position[0]) # estimate based on acceleration
+
+        self.predicted_location = np.array(position[0])      # prediction from kalman
 
     def compute_step(self, step):
-        """Compute position & velocity of next step."""
-        self.position += step * self.velocity                               # orig: velocity, position
-        # self.position += step * self.velocity + 0.5 * np.square(self.acceleration) # TODO: acceleration, velocity, position
+        """Compute position & velocity of next step: v[n+1] = v[n] + a*step"""
+        """Compute position & velocity of next step: pos[n+1] =pos[n] + v*step"""
 
-        # print("""
-        # velocity:{0}
-        # vafter: {1}
-        # """.format(self.velocity, self.velocity + step*self.acceleration))
-        self.velocity += step*self.acceleration
-        # self.vafter = self.velocity +step*self.acceleration
+        """Euler method: integrate by multiplying with sufficiently small steps"""
+        self.velocity += self.acceleration*step # Euler method for integration
 
-    def new_movement(self):
-        """Store velocity of next step."""
+        self.position += self.velocity*step     # orig: velocity, position
+
+    def new_direction(self):
+        """Store velocity & acceleration direction change of next step."""
         self.velocity = self.vafter 
         self.acceleration = self.acc_after
 
@@ -63,6 +59,10 @@ class Sphero:
         """velocity sensor based x pos estimation"""
         # self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise) #once integrated error
         self.speed_sensor_x_estimate += step * (self.velocity[0]) +gauss_noise  #not integrated error
+        # self.speed_sensor_x_estimate += step * (self.velocity[0])             #no error
+        """acceleration sensor based x pos estimation"""
+        # self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise) #once integrated error
+        self.speed_sensor _x_estimate += step * (self.velocity[0]) +gauss_noise  #not integrated error
         # self.speed_sensor_x_estimate += step * (self.velocity[0])             #no error
 
         """TODO: acc sensor based x pos estimation"""
@@ -89,7 +89,7 @@ class Sphero:
         """Compute kinetic energy."""
         return self.mass / 2. * np.linalg.norm(self.velocity)**2
 
-    # TODO: make sphero's re or de-accelerate to their maximum velocity after collision
+    # TODO: ACCEL fix
     def compute_collision(self, other_sphero, step):
         """Compute velocity after collision with another ball."""
         m1, m2 = self.mass, other_sphero.mass
@@ -98,16 +98,17 @@ class Sphero:
         x1, x2 = self.position, other_sphero.position
         di = x2-x1
         norm = np.linalg.norm(di)
-        # TODO: ACCEL fix
         if norm-r1-r2 < step*abs(np.dot(v1-v2, di))/norm:
             self.vafter = v1 - 2. * m2/(m1+m2) * np.dot(v1-v2, di) / (np.linalg.norm(di)**2.) * di
 
     def compute_refl(self, wall_list, step, size):
-        """Compute velocity after hitting an edge.
-
-        step the computation step
-        size the medium size
         """
+        Compute velocity after hitting an edge.
+
+        step the computation step, 
+        size the medium size"""
+        # TODO: make this the collision pos instead of the sphero pos
+
         r, v, pos = self.radius, self.velocity, self.position
         """"make a projection of your next step on the axis -> check if you're gonna cross over this boundary the next step"""
         projx = step*abs(np.dot(v,np.array([1.,0.])))
@@ -115,54 +116,43 @@ class Sphero:
 
         """OUTER WALL x collision"""
         if abs(pos[0])-r < projx or abs(size-pos[0])-r < projx:
-            # self.vafter[0] *= -1
-            self.vafter[0] *= 0
+            print("x collision")
+            self.vafter *= 0
             self.acc_after[0] *= -1
-            print("""
-            vel: {0},
-            vel_after: {1}
-            acc_after: {2}
-            """.format(self.velocity, self.vafter, self.acc_after))
 
-            # TODO: make this the collision pos instead of the sphero pos
             collision_coords = np.array(pos)
             self.collision_list_vert.append(collision_coords)
-            # print (self.collision_list_vert[-1])
-            # print (projx)
-            print("x collision")
             
         """OUTER WALL y collision"""
         if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
-            self.vafter[1] *= -1.
-            collision_coords = np.array(pos)
-            # print(projy)
-            self.collision_list_hor.append(collision_coords)
-            # print (self.collision_list_hor[-1])
             print("y collision")
+            self.vafter *= 0
+            self.acc_after[1] *= -1
+
+            collision_coords = np.array(pos)
+            self.collision_list_hor.append(collision_coords)
 
         for wall in wall_list:
             """INNER WALL left or right collision"""
             if (abs(wall.position[0]-pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]) or (abs(-wall.position[2]+pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]):
-                self.vafter[0] *= -1
-                # TODO: invert acceleration on collision
-                # TODO: make this the collision pos instead of the sphero pos
+                print("x collision")
+                # self.vafter[0] *= -1.
+                self.vafter *= 0
+                self.acc_after[0] *= -1
+
                 collision_coords = np.array(pos)
                 self.collision_list_vert.append(collision_coords)
-                # print("projx: {}".format(projx))
-                # print (self.collision_list_vert[-1])
-                print("x collision")
 
             """INNER WALL bottom or top collision"""
             if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2] or \
             abs(wall.position[1] - pos[1]-r) < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
-                # print("y collision")
-                # print("vel: {0}, vel_after: {1}".format(self.velocity, self.vafter))
-                self.vafter[1] *= -1.
+                print("y collision")
+                # self.vafter[1] *= -1.
+                self.vafter *= 0
+                self.acc_after[1] *= -1.
+
                 collision_coords = np.array(pos)
                 self.collision_list_hor.append(collision_coords)
-                # print("projy: {}".format(projy))
-                # print (self.collision_list_hor[-1])
-                # print("vel: {0}, vel_after: {1}".format(self.velocity, self.vafter))
 
 
 class Wall:
@@ -186,6 +176,6 @@ def solve_step(sphero_list, wall_list, step, size):
                 
     """Compute position of every sphero"""
     for sphero in sphero_list:
-        sphero.new_movement()
+        sphero.new_direction()
         sphero.compute_step(step)
         # sphero.update_motion_model(step) #motion model with kalman filtering
