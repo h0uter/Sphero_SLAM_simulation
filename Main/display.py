@@ -38,10 +38,10 @@ def rgb(r, g, b):
     return "#%s%s%s" % tuple([hex(c)[2:].rjust(2, "0") for c in (r, g, b)])
 
 # to remember all positions
-remmember1 = []
-remmember_last1 = startposition_ball1
-remmember2 = []
-remmember_last2 = startposition_ball2
+current_pos1 = []
+last_pos1 = startposition_ball1
+current_pos1 = []
+last_pos2 = startposition_ball2
 
 
 class Display:
@@ -116,21 +116,22 @@ class Display:
 
     def update_errormap(self):
         "Create Error figure V. Halithan"
-        global remmember_last1, remmember_last2
+        update_interval = 30
 
-        remmember1=  self.spheros[0].position
-        plt.plot([remmember_last1[0],remmember1[0]],[500-remmember_last1[1],500-remmember1[1]], color = 'green')
-        remmember_last1 = copy.deepcopy (self.spheros[0].position)
+        global last_pos1, last_pos2
+
+        current_pos1=  self.spheros[0].position
+
+        if abs(current_pos1[0] - last_pos1[0]) > update_interval:
+            plt.plot([last_pos1[0],current_pos1[0]],[500-last_pos1[1],500-current_pos1[1]], 'r--')
+            last_pos1 = copy.deepcopy (self.spheros[0].position)
+            self.error_canvas.draw()
+        
 
         "2nd ball tracking"
-
         # remmember2=  self.spheros[1].position
         # plt.plot([remmember_last2[0],remmember2[0]],[500-remmember_last2[1],500-remmember2[1]], color = 'red')
-        # remmember_last2 = copy.deepcopy (self.spheros[1].position)
-        # self.error_canvas.draw()
-        
-        
-        
+        # remmember_last2 = copy.deepcopy (self.spheros[1].position)   
         
 
     def update(self):
