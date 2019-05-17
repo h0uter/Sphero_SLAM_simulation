@@ -7,6 +7,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
+from constanten import startposition_ball1, startposition_ball2
 
 def _create_circle(self, x, y, r, **kwargs):
     """Create a circle
@@ -38,9 +39,9 @@ def rgb(r, g, b):
 
 # to remember all positions
 remmember1 = []
-remmember_last1 = [140.,320.]
+remmember_last1 = startposition_ball1
 remmember2 = []
-remmember_last2 = [200.,130.]
+remmember_last2 = startposition_ball2
 
 
 class Display:
@@ -121,11 +122,12 @@ class Display:
         plt.plot([remmember_last1[0],remmember1[0]],[500-remmember_last1[1],500-remmember1[1]], color = 'green')
         remmember_last1 = copy.deepcopy (self.spheros[0].position)
 
-        # 2de tabel
-        remmember2=  self.spheros[1].position
-        plt.plot([remmember_last2[0],remmember2[0]],[500-remmember_last2[1],500-remmember2[1]], color = 'red')
-        remmember_last2 = copy.deepcopy (self.spheros[1].position)
-        self.error_canvas.draw()
+        "2nd ball tracking"
+
+        # remmember2=  self.spheros[1].position
+        # plt.plot([remmember_last2[0],remmember2[0]],[500-remmember_last2[1],500-remmember2[1]], color = 'red')
+        # remmember_last2 = copy.deepcopy (self.spheros[1].position)
+        # self.error_canvas.draw()
         
         
         
