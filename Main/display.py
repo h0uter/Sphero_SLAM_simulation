@@ -37,8 +37,12 @@ def rgb(r, g, b):
     return "#%s%s%s" % tuple([hex(c)[2:].rjust(2, "0") for c in (r, g, b)])
 
 # to remember all positions
-remmember = []
-remmember_last = [140.,320.]
+remmember1 = []
+remmember_last1 = [140.,320.]
+remmember2 = []
+remmember_last2 = [200.,130.]
+
+
 class Display:
     """Define the window used to display a simulation"""
 
@@ -111,22 +115,19 @@ class Display:
 
     def update_errormap(self):
         "Create Error figure V. Halithan"
-        global remmember_last
+        global remmember_last1, remmember_last2
 
-        fig = Figure(figsize=(5,5), dpi=100)
-
-        remmember=  self.spheros[0].position
-
-        print '\n\nremmember={0}' .format(remmember)
-        print 'remmemberlast={0}' .format(remmember_last)
-
-        a = fig.add_subplot(111)
-        plt.plot([remmember_last[0],remmember[0]],[500-remmember_last[1],500-remmember[1]], color = 'green')
+        remmember1=  self.spheros[0].position
+        plt.plot([remmember_last1[0],remmember1[0]],[500-remmember_last1[1],500-remmember1[1]], color = 'green')
         plt.gcf().canvas.draw()
-        
-        remmember_last = copy.deepcopy (self.spheros[0].position)
-        
-        print 'remmemberlast={0}' .format(remmember_last)
+        remmember_last1 = copy.deepcopy (self.spheros[0].position)
+
+
+        # 2de tabel
+        remmember2=  self.spheros[1].position
+        plt.plot([remmember_last2[0],remmember2[0]],[500-remmember_last2[1],500-remmember2[1]], color = 'red')
+        plt.gcf().canvas.draw()
+        remmember_last2 = copy.deepcopy (self.spheros[1].position)
         
         
         
@@ -160,7 +161,7 @@ class Display:
     def animate(self):
         """Animate the drawing items"""
         if self.started:
-            self.update_errormap()
+            # self.update_errormap()
             self.update() 
             self.window.after(0, self.animate)
 
