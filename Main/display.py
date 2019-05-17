@@ -7,7 +7,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from constanten import startposition_ball1, startposition_ball2
+from constanten import startposition_ball0, startposition_ball1, startposition_ball2
 
 def _create_circle(self, x, y, r, **kwargs):
     """Create a circle
@@ -38,16 +38,19 @@ tk.Canvas.coords_circle = _coords_circle
 def rgb(r, g, b):
     return "#%s%s%s" % tuple([hex(c)[2:].rjust(2, "0") for c in (r, g, b)])
 
-# to remember all positions
+"to remember all positions"
+current_pos0 = []
+last_pos0 = startposition_ball0
+
 current_pos1 = []
 last_pos1 = startposition_ball1
 
-# current_poserror1= []
-# last_poserror1= startposition_ball1
-
-current_pos1 = []
+current_pos2 = []
 last_pos2 = startposition_ball2
 
+
+# current_poserror1= []
+# last_poserror1= startposition_ball1
 
 class Display:
     """Define the window used to display a simulation"""
@@ -126,19 +129,36 @@ class Display:
         "Create Error figure V. Halithan"
         update_interval = 30
 
-        global last_pos1, last_pos2   #, last_poserror1
+        global last_pos0, last_pos1, last_pos2   #, last_poserror1
 
-        current_pos1=  self.spheros[0].position
+        current_pos0=  self.spheros[0].position
+        current_pos1=  self.spheros[1].position
+        current_pos2=  self.spheros[2].position
 
         # current_poserror1=  self.spheros[0].speed_sensor_x_estimate
 
-        if abs(current_pos1[0] - last_pos1[0]) > update_interval or abs(current_pos1[1] - last_pos1[1])   > update_interval:
-            plt.plot([last_pos1[0],current_pos1[0]],[500-last_pos1[1],500-current_pos1[1]], 'r--')
+        if abs(current_pos0[0] - last_pos0[0]) > update_interval or abs(current_pos0[1] - last_pos0[1])   > update_interval:
+            plt.plot([last_pos0[0],current_pos0[0]],[500-last_pos0[1],500-current_pos0[1]], 'r--')
             # plt.plot([last_poserror1, current_poserror1],[500-last_pos1[1],500-current_pos1[1]], 'r--')
 
-            last_pos1 = copy.deepcopy (self.spheros[0].position)
+            last_pos0 = copy.deepcopy (self.spheros[0].position)
             # last_poserror1= copy.deepcopy (self.speed_sensor_x_estimate)
+            self.error_canvas.draw()
 
+
+
+        # if abs(current_pos1[0] - last_pos1[0]) > update_interval or abs(current_pos1[1] - last_pos1[1])   > update_interval:
+        #     plt.plot([last_pos1[0],current_pos1[0]],[500-last_pos1[1],500-current_pos1[1]], 'g:')
+
+        #     last_pos1 = copy.deepcopy (self.spheros[1].position)
+        #     self.error_canvas.draw()
+
+        # if abs(current_pos2[0] - last_pos2[0]) > update_interval or abs(current_pos2[1] - last_pos2[1])   > update_interval:
+        #     plt.plot([last_pos2[0],current_pos2[0]],[500-last_pos2[1],500-current_pos2[1]], 'b-.')
+        #     last_pos2 = copy.deepcopy (self.spheros[2].position)
+        
+
+        
             self.error_canvas.draw()
         
 

@@ -21,9 +21,9 @@ if __name__ == "__main__":
 
     step = 0.005
 
-    spheros = [ Sphero(m, r, startposition_ball1, [-10.,-10.]), 
-                Sphero(m, r, startposition_ball2, [10.,10.]), 
-                Sphero(m, r, startposition_ball3, [10.,15.])]
+    spheros = [ Sphero(m, r, startposition_ball0, [-10.,-10.]), 
+                Sphero(m, r, startposition_ball1, [10.,10.]), 
+                Sphero(m, r, startposition_ball2, [10.,15.])]
 
     """1D filter test"""
     # walls = [Wall([300,0,310,300])]
