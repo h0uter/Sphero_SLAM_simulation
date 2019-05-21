@@ -32,7 +32,6 @@ def _coords_circle(self, target, x, y, r, **kwargs):
     return the circle drawing with updated coordinates
     """
     return self.coords(target, x-r, y-r, x+r, y+r, **kwargs)
-
 tk.Canvas.coords_circle = _coords_circle
 
 def rgb(r, g, b):
@@ -41,10 +40,8 @@ def rgb(r, g, b):
 "to remember all positions"
 current_pos0 = []
 last_pos0 = startposition_ball0
-
 current_pos1 = []
 last_pos1 = startposition_ball1
-
 current_pos2 = []
 last_pos2 = startposition_ball2
 
@@ -94,7 +91,6 @@ class Display:
         # self.error_canvas = FigureCanvasTkAgg(fig, master=errormap)
         # self.error_canvas.get_tk_widget().pack(side='right')
 
-
         """draw the world"""
         self.drawing = self.create()
         self.create_walls()
@@ -125,53 +121,47 @@ class Display:
             wall: self.environment_canvas.create_rectangle(wall.position[0], wall.position[1], wall.position[2], wall.position[3], fill =self.color4) for wall in self.walls
         }
 
-
     # def update_errormap(self):
-        "Create Error figure V. Halithan"
-        update_interval = 30
+    #     "Create Error figure V. Halithan"
+    #     update_interval = 30
 
-        global last_pos0, last_pos1, last_pos2   #, last_poserror1
+    #     global last_pos0, last_pos1, last_pos2   #, last_poserror1
 
-        current_pos0=  self.spheros[0].position
-        current_pos1=  self.spheros[1].position
-        current_pos2=  self.spheros[2].position
+    #     current_pos0=  self.spheros[0].position
+    #     current_pos1=  self.spheros[1].position
+    #     current_pos2=  self.spheros[2].position
 
-        # current_poserror1=  self.spheros[0].speed_sensor_x_estimate
+    #     # current_poserror1=  self.spheros[0].speed_sensor_x_estimate
 
-        if abs(current_pos0[0] - last_pos0[0]) > update_interval or abs(current_pos0[1] - last_pos0[1])   > update_interval:
-            plt.plot([last_pos0[0],current_pos0[0]],[500-last_pos0[1],500-current_pos0[1]], 'r--')
-            # plt.plot([last_poserror1, current_poserror1],[500-last_pos1[1],500-current_pos1[1]], 'r--')
+    #     if abs(current_pos0[0] - last_pos0[0]) > update_interval or abs(current_pos0[1] - last_pos0[1])   > update_interval:
+    #         plt.plot([last_pos0[0],current_pos0[0]],[500-last_pos0[1],500-current_pos0[1]], 'r--')
+    #         # plt.plot([last_poserror1, current_poserror1],[500-last_pos1[1],500-current_pos1[1]], 'r--')
 
-            last_pos0 = copy.deepcopy (self.spheros[0].position)
-            # last_poserror1= copy.deepcopy (self.speed_sensor_x_estimate)
-            self.error_canvas.draw()
+    #         last_pos0 = copy.deepcopy (self.spheros[0].position)
+    #         # last_poserror1= copy.deepcopy (self.speed_sensor_x_estimate)
+    #         self.error_canvas.draw()
 
+    #     # if abs(current_pos1[0] - last_pos1[0]) > update_interval or abs(current_pos1[1] - last_pos1[1])   > update_interval:
+    #     #     plt.plot([last_pos1[0],current_pos1[0]],[500-last_pos1[1],500-current_pos1[1]], 'g:')
 
+    #     #     last_pos1 = copy.deepcopy (self.spheros[1].position)
+    #     #     self.error_canvas.draw()
 
-        # if abs(current_pos1[0] - last_pos1[0]) > update_interval or abs(current_pos1[1] - last_pos1[1])   > update_interval:
-        #     plt.plot([last_pos1[0],current_pos1[0]],[500-last_pos1[1],500-current_pos1[1]], 'g:')
-
-        #     last_pos1 = copy.deepcopy (self.spheros[1].position)
-        #     self.error_canvas.draw()
-
-        # if abs(current_pos2[0] - last_pos2[0]) > update_interval or abs(current_pos2[1] - last_pos2[1])   > update_interval:
-        #     plt.plot([last_pos2[0],current_pos2[0]],[500-last_pos2[1],500-current_pos2[1]], 'b-.')
-        #     last_pos2 = copy.deepcopy (self.spheros[2].position)
+    #     # if abs(current_pos2[0] - last_pos2[0]) > update_interval or abs(current_pos2[1] - last_pos2[1])   > update_interval:
+    #     #     plt.plot([last_pos2[0],current_pos2[0]],[500-last_pos2[1],500-current_pos2[1]], 'b-.')
+    #     #     last_pos2 = copy.deepcopy (self.spheros[2].position)
         
-
+    #         self.error_canvas.draw()
         
-            self.error_canvas.draw()
-        
-
-        "2nd ball tracking"
-        # remmember2=  self.spheros[1].position
-        # plt.plot([remmember_last2[0],remmember2[0]],[500-remmember_last2[1],500-remmember2[1]], color = 'red')
-        # remmember_last2 = copy.deepcopy (self.spheros[1].position)   
+    #     "2nd ball tracking"
+    #     # remmember2=  self.spheros[1].position
+    #     # plt.plot([remmember_last2[0],remmember2[0]],[500-remmember_last2[1],500-remmember2[1]], color = 'red')
+    #     # remmember_last2 = copy.deepcopy (self.spheros[1].position)   
         
 
     def update(self):
         """Update the drawing items for a time step"""
-        solver.solve_step(self.spheros, self.walls, self.step, self.size)
+        solver.solve_step(self.spheros, self.walls, self.step, self.size, self.step_count)
         
         for sphero in self.spheros:
             self.environment_canvas.coords_circle(self.drawing[sphero], sphero.position[0], sphero.position[1], sphero.radius)
@@ -186,11 +176,8 @@ class Display:
                 self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-20, collision[0]+5, collision[1]+20, outline=self.color1, fill= rgb(100,100,100) )
         self.environment_canvas.update()
 
-        # print(step_count)
-        if self.step_count % 15 == 0:
-            print ('step: {}'.format(self.step_count))
+        '''count simulation steps'''
         self.step_count += 1
-
 
     def start(self):
         """Start the animation"""

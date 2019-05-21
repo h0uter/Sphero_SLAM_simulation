@@ -34,7 +34,7 @@ class Kalman:
 		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			        # orig Process noise covariance
 		self.Q 		 = np.matrix( np.eye(state_dim) )			                # 0 Process noise covariance
 		# self.R		 = np.matrix( np.eye(observation_dim)*0.01 )			# orig Observation noise/measurement noise covariance
-		self.R		 = np.matrix( np.eye(observation_dim) )			            # 0 Observation noise/measurement noise covariance
+		self.R		 = np.matrix( np.eye(observation_dim)*0 )			            # 0 Observation noise/measurement noise covariance
 		self.A		 = np.matrix( np.eye(state_dim) )			                # Transition/Dynamic matrix
 		self.H		 = np.matrix( np.zeros((observation_dim, state_dim)) )      # Measurement matrix
 		self.K		 = np.matrix( np.zeros_like(self.H.T) )			            # Kalman gain matrix
@@ -97,10 +97,10 @@ if __name__ == "__main__":
         # print(k)
 
         # and when you want to make a new prediction
-        predicted_location = k.predict()
-        predicted_path.append(predicted_location)
-        # print (predicted_location)
-        print("prediction {0}: [{1}]".format(i, predicted_location[0][0]))
-        # print("prediction: [{0}, {1}]".format(predicted_location[0][0], predicted_location[1][0]))
+        predicted_position = k.predict()
+        predicted_path.append(predicted_position)
+        # print (predicted_position)
+        print("prediction {0}: [{1}]".format(i, predicted_position[0][0]))
+        # print("prediction: [{0}, {1}]".format(predicted_position[0][0], predicted_position[1][0]))
 
     # pprint(predicted_path)
