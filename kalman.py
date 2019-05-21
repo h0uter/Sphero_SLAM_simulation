@@ -1,5 +1,4 @@
 import numpy as np
-from pprint import pprint
 
 class Kalman:
 	"""
@@ -81,7 +80,7 @@ class Kalman:
 """testing kalman funtionality"""
 if __name__ == "__main__":
     # e.g., tracking an (x,y) point over time
-    k = Kalman(3, 1)
+    k = Kalman(6, 2)
     # k = Kalman(6, 2)
     predicted_path = []
     mu, sigma = 0, 0.5 # mean and standard deviation
@@ -95,11 +94,11 @@ if __name__ == "__main__":
         # someNewPoint = np.r_[i, 2*i]
         k.update(someNewPoint)
         # print(k)
-
         # and when you want to make a new prediction
         predicted_position = k.predict()
         predicted_path.append(predicted_position)
         # print (predicted_position)
+        # print(k.H)
         print("prediction {0}: [{1}]".format(i, predicted_position[0][0]))
         # print("prediction: [{0}, {1}]".format(predicted_position[0][0], predicted_position[1][0]))
 

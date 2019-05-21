@@ -7,7 +7,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from constanten import startposition_ball0, startposition_ball1, startposition_ball2
+from CONSTANTS import startposition_ball0, startposition_ball1, startposition_ball2
 
 def _create_circle(self, x, y, r, **kwargs):
     """Create a circle
