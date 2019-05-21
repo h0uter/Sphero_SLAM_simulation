@@ -18,7 +18,6 @@ def init_list(N):
     return balls
 
 if __name__ == "__main__":
-
     step = 0.005
 
     spheros = [ Sphero(m, r, startposition_ball0, [-10.,-10.]), 

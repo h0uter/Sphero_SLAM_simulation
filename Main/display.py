@@ -48,7 +48,6 @@ last_pos1 = startposition_ball1
 current_pos2 = []
 last_pos2 = startposition_ball2
 
-
 # current_poserror1= []
 # last_poserror1= startposition_ball1
 
@@ -61,6 +60,8 @@ class Display:
         self.walls = walls
         self.step = step
         self.size = size
+        
+        self.step_count = 0
 
         self.color1 = "#721F1F" 
         self.color2 = "#5F7999" #color Sphero
@@ -81,17 +82,17 @@ class Display:
         self.mapping_canvas = tk.Canvas(frame1, width=self.size, height=self.size, bg= self.color2)
         self.mapping_canvas.pack(side='left')
 
-        """error plotting canvas """
-        # a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
-        errormap = tk.Canvas(frame1,width=size,height=size,bg="white")
-        errormap.pack(side='right')
-        fig = plt.figure(figsize=(6,6),facecolor='w')
-        title=plt.title ('Real/Error Movement Tracking')
-        xlabel=plt.xlabel('Positioning in X') 
-        ylabel=plt.ylabel('Positioning in Y') 
-        axis = plt.axis([0,size,0, size])
-        self.error_canvas = FigureCanvasTkAgg(fig, master=errormap)
-        self.error_canvas.get_tk_widget().pack(side='right')
+        # """error plotting canvas """
+        # # a.plot([1,2,3,4,5,6,7,8],[5,6,1,3,8,9,3,5])
+        # errormap = tk.Canvas(frame1,width=size,height=size,bg="white")
+        # errormap.pack(side='right')
+        # fig = plt.figure(figsize=(6,6),facecolor='w')
+        # title=plt.title ('Real/Error Movement Tracking')
+        # xlabel=plt.xlabel('Positioning in X') 
+        # ylabel=plt.ylabel('Positioning in Y') 
+        # axis = plt.axis([0,size,0, size])
+        # self.error_canvas = FigureCanvasTkAgg(fig, master=errormap)
+        # self.error_canvas.get_tk_widget().pack(side='right')
 
 
         """draw the world"""
@@ -125,7 +126,7 @@ class Display:
         }
 
 
-    def update_errormap(self):
+    # def update_errormap(self):
         "Create Error figure V. Halithan"
         update_interval = 30
 
@@ -185,6 +186,12 @@ class Display:
                 self.mapping_canvas.create_rectangle(collision[0]-5, collision[1]-20, collision[0]+5, collision[1]+20, outline=self.color1, fill= rgb(100,100,100) )
         self.environment_canvas.update()
 
+        # print(step_count)
+        if self.step_count % 15 == 0:
+            print ('step: {}'.format(self.step_count))
+        self.step_count += 1
+
+
     def start(self):
         """Start the animation"""
         if not self.started:
@@ -194,7 +201,7 @@ class Display:
     def animate(self):
         """Animate the drawing items"""
         if self.started:
-            self.update_errormap()     # To Stop the ErrorMapping, change this to a text
+            # self.update_errormap()     # To Stop the ErrorMapping, change this to a text
             self.update() 
             self.window.after(0, self.animate)
 

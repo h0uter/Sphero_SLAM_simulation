@@ -31,13 +31,13 @@ class Kalman:
 		self.state_dim = state_dim
 		self.obs_dim   = observation_dim
 		
-		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			            # orig Process noise
-		self.Q 		 = np.matrix( np.eye(state_dim) )			            # 0 Process noise
-		# self.R		 = np.matrix( np.eye(observation_dim)*0.01 )			    # orig Observation noise
-		self.R		 = np.matrix( np.eye(observation_dim) )			    # 0 Observation noise
-		self.A		 = np.matrix( np.eye(state_dim) )			                # Transition matrix
+		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			        # orig Process noise covariance
+		self.Q 		 = np.matrix( np.eye(state_dim) )			                # 0 Process noise covariance
+		# self.R		 = np.matrix( np.eye(observation_dim)*0.01 )			# orig Observation noise/measurement noise covariance
+		self.R		 = np.matrix( np.eye(observation_dim) )			            # 0 Observation noise/measurement noise covariance
+		self.A		 = np.matrix( np.eye(state_dim) )			                # Transition/Dynamic matrix
 		self.H		 = np.matrix( np.zeros((observation_dim, state_dim)) )      # Measurement matrix
-		self.K		 = np.matrix( np.zeros_like(self.H.T) )			            # Gain matrix
+		self.K		 = np.matrix( np.zeros_like(self.H.T) )			            # Kalman gain matrix
 		self.P		 = np.matrix( np.zeros_like(self.A) )			            # State covariance
 		self.x		 = np.matrix( np.zeros((state_dim, 1)) )		            # The actual state of the system
 	
