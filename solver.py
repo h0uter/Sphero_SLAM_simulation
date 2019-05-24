@@ -1,3 +1,4 @@
+from CONSTANTS import STEP_SIZE
 import numpy as np
 import random
 
@@ -32,12 +33,13 @@ class Sphero:
         self.collision_list_vert = []
 
         '''kalman'''
-        self.kalman_instance = Kalman(3, 1)
+        self.kalman_instance = Kalman(6, 2, STEP_SIZE)
 
         # TODO: complete
         """motion model = [acc_x, acc_y] : virt sensor + gaussian noise --> position [x, y]"""
-        self.speed_sensor_x_estimate = np.array(position[0]) # estimate based on speed
-        # self.acc_sensor_x_estimate = np.array(position[0]) # estimate based on acceleration
+        # self.speed_sensor_x_estimate = np.array(position[0]) # estimate based on speed
+        self.acc_sensor_pos_estimate = np.array(position) # estimate based on acceleration
+        # self.acc_sensor = np.array(position) # estimate based on acceleration
 
     def compute_step(self, step):
         """Compute position & velocity of next step: v[n+1] = v[n] + a*step"""
@@ -59,42 +61,24 @@ class Sphero:
         mu, sigma = 0, 0.5 # mean and standard deviation
         gauss_noise = np.random.normal(mu, sigma)
         # gauss_noise = np.array( [np.random.normal(mu, sigma), np.random.normal(mu, sigma)] )
-        """velocity sensor x pos motion model"""
-        # self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise) #once integrated error
-        self.speed_sensor_x_estimate += step * (self.velocity[0]) +gauss_noise  #not integrated error
-        # self.speed_sensor_x_estimate += step * (self.velocity[0])             #no error
-        """acceleration sensor based x pos motion model"""
-        # self.speed_sensor_x_estimate += step * (self.velocity[0]+gauss_noise) #once integrated error
-        self.speed_sensor_x_estimate += step * (self.velocity[0]) +gauss_noise  #not integrated error
-        # self.speed_sensor_x_estimate += step * (self.velocity[0])             #no error
-
-        """TODO: acc sensor based x pos motion model"""
-        # self.acc_sensor_x_estimate += step * self.velocity[0] + 0.5*self.acceleration**2
+        self.acc_sensor = self.acceleration # + gauss_noise
 
         '''kalman'''
-        k = Kalman(3, 1)
-        someNewPoint = np.r_[self.speed_sensor_x_estimate]
-        # someNewPoint = self.speed_sensor_x_estimate
-        # print("someNewPoint: {0}".format(someNewPoint))
-        k.update(someNewPoint)
-        # and when you want to make a new prediction
-        self.predicted_position = k.predict()
-        error = self.predicted_position - self.position[0]
+        acceleration = np.matrix([
+            [self.acc_after[0]],
+            [self.acc_after[1]] ])
 
-        print("""
-        speed sensor est pos:  {0}
-        actual pos:            {1}
-        predictedlocation :    {2}
-        error:                 {3}
-        """.format(self.speed_sensor_x_estimate, self.position[0], self.predicted_position, error))
+        self.kalman_instance.prediction_step(acceleration)
 
     def compute_energy(self, ball_list):
         """Compute kinetic energy."""
         return self.mass / 2. * np.linalg.norm(self.velocity)**2
 
     def collision_event(self):
-        someNewPoint = np.r_[self.position[0]]
-        self.kalman_instance.update(someNewPoint)
+        someNewPoint = np.matrix([
+			[self.position[0]],
+			[self.position[1]]])
+        self.kalman_instance.correction_step(someNewPoint)
 
     # TODO: ACCEL fix
     def compute_s2s_collision(self, other_sphero, step):
@@ -170,14 +154,27 @@ class Sphero:
                 self.collision_event()
 
     def logger(self, step_count):
-        if step_count % 50 == 0:
-
+        if step_count % 150 == 0:
             self.predicted_position = self.kalman_instance.predict()
+            squared_error = [
+                np.sqrt(self.position[0]**2 - self.predicted_position[0]**2 )
+            ]
+            error = [
+                self.position[0] - self.predicted_position[0],
+                self.position[1] - self.predicted_position[1],
+            ]
             print ('''
             step:               {0}
-            predicted position: {1}
-            actual position:    {2}
-            '''.format(step_count, self.predicted_position, self.position))
+                                  x             y
+            predicted position: [{1} {2}]
+            actual position:    {3}
+            squared error:      {4}
+            '''.format(
+                step_count, 
+                self.predicted_position[0], 
+                self.predicted_position[1], 
+                self.position,
+                error))
 
 
 class Wall:
@@ -202,7 +199,7 @@ def solve_step(sphero_list, wall_list, step, size, step_count):
     for sphero in sphero_list:
         sphero.new_direction()
         sphero.compute_step(step)
-        # sphero.update_motion_model(step) #motion model with kalman filtering
+        sphero.update_motion_model(step_count) #motion model with kalman filtering
 
     '''log sphero info'''
     sphero_list[0].logger(step_count)

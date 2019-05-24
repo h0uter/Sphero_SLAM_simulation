@@ -17,9 +17,20 @@ def init_list(N):
         balls.append(Sphero(m, m, vx, vv))
     return balls
 
+class Clock():
+    def __init__(self, step_size):
+        """Initialize a clock
+        
+        """
+        self.step_count = 0
+        self.time = self.step_count * step_size
+
+    # def increment_step_count(self):
+
+
 if __name__ == "__main__":
     """parameters to run the simulation with"""       
-    step = 0.005
+    # step = 0.005
 
     '''Many spheros demo'''
     # spheros = [ Sphero(m, r, startposition_ball0, [-10.,-10.]), 
@@ -33,9 +44,9 @@ if __name__ == "__main__":
     # spheros = [ Sphero(m, r, startposition_ball0, [-1.,0.])]
 
     '''tunnel test'''
-    walls = [Wall([0,200,int(size),220]), Wall([0,280,int(size),300])]
+    walls = [Wall([0,100,int(size),120]), Wall([0,380,int(size),4 00])]
     spheros = [ Sphero(m, r, startposition_ball0, [0.,0.])]
 
-
     """run the simulation with given params"""
-    Display(spheros, walls, step, size)
+    
+    Display(spheros, walls, STEP_SIZE, size)

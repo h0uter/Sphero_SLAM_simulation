@@ -1,5 +1,6 @@
 """parameters to run the simulation with"""       
 size = 500.
+STEP_SIZE = 0.001
 
 "sphero params for many spheros"
 m = 20.
