@@ -32,33 +32,26 @@ class Kalman:
 		self.obs_dim   = observation_dim
 		
 		'''custom matrices sphero'''
-		self.A = np.matrix([ 
-			[1, 0, delta_t, 	  0],
-			[0, 1, 		 0, delta_t],
-			[0, 0, 		 1, 	  0],
-			[0, 0, 		 0, 	  1]])
+		self.A = np.matrix([[1, 0, delta_t, 	  0],
+							[0, 1, 		 0, delta_t],
+							[0, 0, 		 1, 	  0],
+							[0, 0, 		 0, 	  1]])
 
-		self.B = np.matrix([ 
-			[0.5*delta_t**2,              0],
-			[             0, 0.5*delta_t**2],
-			[       delta_t,              0],
-			[             0,        delta_t] ])
+		self.B = np.matrix([[0.5*delta_t**2,              0],
+							[             0, 0.5*delta_t**2],
+							[       delta_t,              0],
+							[             0,        delta_t]])
 
-		self.H = np.matrix([
-			[1, 0, 0, 0],
-			[0, 1, 0, 0] ])
+		self.H = np.matrix([[1, 0, 0, 0],
+							[0, 1, 0, 0]])
 
-		self.x = np.matrix([
-			[0],
-			[0],
-			[0],
-			[0],
-		]) 
+		self.x = np.matrix([[0],
+							[0],
+							[0],
+							[0]]) 
 
-		self.u = np.matrix([
-			[0],
-			[0]
-		]) 
+		self.u = np.matrix([[0],
+							[0]]) 
 
 		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			        # 1. orig Process noise covariance
 		self.Q 		 = np.matrix( np.eye(4)*1e-4 )			        # 1. orig Process noise covariance

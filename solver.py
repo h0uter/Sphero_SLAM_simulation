@@ -10,7 +10,7 @@ from kalman import Kalman
 class Sphero:
     """Define physics of elastic collision."""
     
-    def __init__(self, mass, radius, position, velocity):
+    def __init__(self, mass, radius, position, velocity, acceleration):
         """Initialize a Sphero object
         
         mass the mass of sphero
@@ -23,23 +23,20 @@ class Sphero:
         self.radius = radius
         self.position = np.array(position)
         self.velocity = np.array(velocity)
-        # TODO: move this to sim intialisation
-        self.acceleration = np.array([5, 5])    # constant acceleration
+        self.acceleration = np.array(acceleration)    # constant acceleration
 
         self.vafter = np.copy(velocity) # temporary storage for velocity direction change if a collision would occur
         self.acc_after = np.copy(self.acceleration) # temporary storage for acceleration in case of collision
 
         self.collision_list_hor = []
         self.collision_list_vert = []
+        # TODO: last collision information, along which axis?: collision with y axis happens along the x axis
+        # 
+        self.last_collision_info = {}
 
-        '''kalman'''
+        '''per Sphero kalman filter'''
         self.kalman_instance = Kalman(6, 2, STEP_SIZE)
 
-        # TODO: complete
-        """motion model = [acc_x, acc_y] : virt sensor + gaussian noise --> position [x, y]"""
-        # self.speed_sensor_x_estimate = np.array(position[0]) # estimate based on speed
-        self.acc_sensor_pos_estimate = np.array(position) # estimate based on acceleration
-        # self.acc_sensor = np.array(position) # estimate based on acceleration
 
     def compute_step(self, step):
         """Compute position & velocity of next step: v[n+1] = v[n] + a*step"""
@@ -57,7 +54,8 @@ class Sphero:
 
     # TODO: not used atm 
     def update_motion_model(self, step):
-        """Compute position of next step based on velocity + noise"""
+        """motion model: x_n+1 = x_n + ∫∫(virt acc sensor + gaussian noise) --> position [x, y]"""
+
         mu, sigma = 0, 0.5 # mean and standard deviation
         gauss_noise = np.random.normal(mu, sigma)
         # gauss_noise = np.array( [np.random.normal(mu, sigma), np.random.normal(mu, sigma)] )
@@ -65,20 +63,29 @@ class Sphero:
 
         '''kalman'''
         acceleration = np.matrix([
-            [self.acc_after[0]],
-            [self.acc_after[1]] ])
+            [self.acceleration[0]],
+            [self.acceleration[1]] ])
+        
+        print ('self.acceleration: ', self.acceleration)
+        print ('acceleration: ', acceleration)
 
         self.kalman_instance.prediction_step(acceleration)
 
-    def compute_energy(self, ball_list):
-        """Compute kinetic energy."""
-        return self.mass / 2. * np.linalg.norm(self.velocity)**2
-
     def collision_event(self):
+
+        # if position_fix_axis = 'x':
+        #     someNewPoint = np.matrix([
+		# 	    [self.position[0]],
+		# 	    [])
+
         someNewPoint = np.matrix([
 			[self.position[0]],
 			[self.position[1]]])
         self.kalman_instance.correction_step(someNewPoint)
+
+    def compute_energy(self, ball_list):
+        """Compute kinetic energy."""
+        return self.mass / 2. * np.linalg.norm(self.velocity)**2
 
     # TODO: ACCEL fix
     def compute_s2s_collision(self, other_sphero, step):
@@ -113,7 +120,7 @@ class Sphero:
 
             collision_coords = np.array(pos)
             self.collision_list_vert.append(collision_coords)
-
+            # TODO: give x to collision_event
             self.collision_event()
             
         """OUTER WALL y collision"""
