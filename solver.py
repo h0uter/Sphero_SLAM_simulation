@@ -38,8 +38,8 @@ class Sphero:
 
         '''per Sphero kalman filter state_dim: pos, vel | obs_dim: pos abs, vel = 0'''
         # self.kalman_instance = Kalman(6, 2, STEP_SIZE)
-        self.kalman_instance_x = Kalman(2, 2, STEP_SIZE, position[0])
-        self.kalman_instance_y = Kalman(2, 2, STEP_SIZE, position[1])
+        self.kalman_instance_x = Kalman(2, 1, STEP_SIZE, position[0])
+        self.kalman_instance_y = Kalman(2, 1, STEP_SIZE, position[1])
         self.predicted_position = np.array(position)
 
     def compute_step(self, step):
@@ -60,32 +60,36 @@ class Sphero:
     def update_motion_model(self, step):
         """motion model: x_n+1 = x_n + ∫∫(virt acc sensor + gaussian noise) --> position [x, y]"""
 
-        # mu, sigma = 0, 0.5 # mean and standard deviation
-        # gauss_noise = np.random.normal(mu, sigma)
+        mu, sigma = 1, 5 # mean and standard deviation
+        gauss_noise = np.random.normal(mu, sigma)
         # gauss_noise = np.array( [np.random.normal(mu, sigma), np.random.normal(mu, sigma)] )
         # self.acc_sensor = self.acceleration # + gauss_noise
 
         '''kalman'''
-        self.kalman_instance_x.prediction_step(self.acceleration[0])
-        self.kalman_instance_y.prediction_step(self.acceleration[1])
+        self.kalman_instance_x.prediction_step(
+            self.acceleration[0] + gauss_noise)
+        self.kalman_instance_y.prediction_step(
+            self.acceleration[1] + gauss_noise)
 
     # TODO: position_fix_axis
     def collision_event(self, position_fix_axis):
-
-        # someNewPoint = np.matrix([
-		# 	[self.position[0]],
-		# 	[self.position[1]]])
-        # self.kalman_instance.correction_step(someNewPoint, position_fix_axis)
-
         if position_fix_axis == 'x':
-            z = np.matrix([ [self.position[0]], 
-                            [0] ])
-            self.kalman_instance_x.correction_step(z, position_fix_axis)
+            # z = np.matrix([ [self.position[0]], 
+            #                 [0] ])
+            # self.kalman_instance_x.correction_step_vel_pos(z, position_fix_axis)
+            print('-----------------------------------------------------------------------')
+            print('-----------------------------------------------------------------------')
+            self.kalman_instance_x.correction_step_pos(self.position[0])
+            self.kalman_instance_x.correction_step_vel()  # buggg
+            self.kalman_instance_y.correction_step_vel() 
 
         if position_fix_axis == 'y':
-            z = np.matrix([ [self.position[1]],
-                            [0] ])
-            self.kalman_instance_y.correction_step(z,position_fix_axis)
+            # z = np.matrix([ [self.position[1]],
+            #                 [0] ])
+            # self.kalman_instance_y.correction_step_vel_pos(z,position_fix_axis)
+            self.kalman_instance_y.correction_step_pos(self.position[1])
+            self.kalman_instance_y.correction_step_vel()
+            self.kalman_instance_x.correction_step_vel()
 
     def compute_energy(self, ball_list):
         """Compute kinetic energy."""
@@ -168,6 +172,8 @@ class Sphero:
         if step_count % 150 == 0:
             # self.predicted_position = self.kalman_instance.predict()
             # self.predicted_position = [0, 0]
+            print('predict x: ', self.kalman_instance_x.predict())
+            print('predict y: ', self.kalman_instance_y.predict())
             self.predicted_position[0] = self.kalman_instance_x.predict()[0]
             self.predicted_position[1] = self.kalman_instance_y.predict()[0]
 
@@ -175,24 +181,11 @@ class Sphero:
                 abs(self.position[0] - self.predicted_position[0]),
                 abs(self.position[1] - self.predicted_position[1])]
 
-            # print (
-            #     '''
-            #     step:               {0}
-            #                         x             y
-            #     predicted position: [{1} {2}]
-            #     actual position:    {3}
-            #     error:              {4}
-            #     '''.format(
-            #         step_count, 
-            #         self.predicted_position[0], 
-            #         self.predicted_position[1], 
-            #         self.position,
-            #         error))
             print('______________________________')
             print('step: ', step_count)
-            print('predicted position: [', self.predicted_position[0],', ', self.predicted_position[1], ']')
-            print('actual position: ', self.position)
-            print('error: [', error[0], ', ', error[1], ']')
+            print('predicted position:  [', self.predicted_position[0],', ', self.predicted_position[1], ']')
+            print('actual position:      ', self.position)
+            print('error:               [', error[0], ', ', error[1], ']')
             
 
 

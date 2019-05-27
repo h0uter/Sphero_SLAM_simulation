@@ -10,5 +10,4 @@ startposition_ball1 =[200.,130.]
 startposition_ball2 =[40.,120.]
 # step = 0.09
 
-"1d filtering"
 

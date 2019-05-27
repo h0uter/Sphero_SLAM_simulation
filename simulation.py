@@ -17,17 +17,6 @@ def init_list(N):
         balls.append(Sphero(m, m, vx, vv, [5., 5.]))
     return balls
 
-# class Clock():
-#     def __init__(self, step_size):
-#         """Initialize a clock
-        
-#         """
-#         self.step_count = 0
-#         self.time = self.step_count * step_size
-
-#     # def increment_step_count(self):
-
-
 if __name__ == "__main__":
     """parameters to run the simulation with"""       
     # step = 0.005
