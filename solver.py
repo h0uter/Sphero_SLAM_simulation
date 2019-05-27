@@ -206,4 +206,5 @@ def solve_step(sphero_list, wall_list, step, size, step_count):
         sphero.update_motion_model(step_count) #motion model with kalman filtering
 
     '''log sphero info'''
-    sphero_list[0].logger(step_count)
+    for sphero in sphero_list:
+        sphero.logger(step_count)

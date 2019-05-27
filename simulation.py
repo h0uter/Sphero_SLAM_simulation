@@ -22,10 +22,10 @@ if __name__ == "__main__":
     # step = 0.005
 
     '''Many spheros demo'''
-    # spheros = [ Sphero(m, r, startposition_ball0, [-10.,-10.], [5., 5.]), 
-    #             Sphero(m, r, startposition_ball1, [10.,10.], [5., 5.]), 
-    #             Sphero(m, r, startposition_ball2, [10.,15.], [5., 5.])]
-    # walls = [Wall([100,0,110,300]), Wall([400,0,410,300]), Wall([250, int(size-300), 260, int(size)])]
+    spheros = [ Sphero(m, r, START_POS_BALL_0, [-10.,-10.], ACCELERATION), 
+                Sphero(m, r, startposition_ball1, [10.,10.], ACCELERATION), 
+                Sphero(m, r, startposition_ball2, [10.,15.], ACCELERATION)]
+    walls = [Wall([100,0,110,300]), Wall([400,0,410,300]), Wall([250, int(MAP_SIZE-300), 260, int(MAP_SIZE)])]
 
     """1D filter test"""
     # # walls = [Wall([300,0,310,300])]
@@ -33,8 +33,8 @@ if __name__ == "__main__":
     # spheros = [ Sphero(m, r, startposition_ball0, [-1.,0.], [5., 5.])]
 
     '''tunnel test'''
-    walls = [Wall([0,100,int(MAP_SIZE),120]), Wall([0,380,int(MAP_SIZE),400])]
-    spheros = [ Sphero(m, r, startposition_ball0, [0.,0.], ACCELERATION)]
+    # walls = [Wall([0,100,int(MAP_SIZE),120]), Wall([0,380,int(MAP_SIZE),400])]
+    # spheros = [ Sphero(m, r, START_POS_BALL_0, [0.,0.], ACCELERATION)]
 
     """run the simulation with given params"""
     

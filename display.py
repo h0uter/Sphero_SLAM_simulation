@@ -7,7 +7,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from CONSTANTS import startposition_ball0, startposition_ball1, startposition_ball2, ACCELERATION
+from CONSTANTS import START_POS_BALL_0, startposition_ball1, startposition_ball2, ACCELERATION
 
 def _create_circle(self, x, y, r, **kwargs):
     """Create a circle
@@ -39,7 +39,7 @@ def rgb(r, g, b):
 
 "to remember all positions"
 current_pos0 = []
-last_pos0 = startposition_ball0
+last_pos0 = START_POS_BALL_0
 current_pos1 = []
 last_pos1 = startposition_ball1
 current_pos2 = []
