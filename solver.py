@@ -6,7 +6,7 @@ import pprint
 # motion model
 import scipy.integrate
 from numpy import exp
-# from kalman import Kalman
+
 from kalman_1D import Kalman
 
 class Sphero:
@@ -74,19 +74,11 @@ class Sphero:
     # TODO: position_fix_axis
     def collision_event(self, position_fix_axis):
         if position_fix_axis == 'x':
-            # z = np.matrix([ [self.position[0]], 
-            #                 [0] ])
-            # self.kalman_instance_x.correction_step_vel_pos(z, position_fix_axis)
-            print('-----------------------------------------------------------------------')
-            print('-----------------------------------------------------------------------')
             self.kalman_instance_x.correction_step_pos(self.position[0])
             self.kalman_instance_x.correction_step_vel()  # buggg
             self.kalman_instance_y.correction_step_vel() 
 
         if position_fix_axis == 'y':
-            # z = np.matrix([ [self.position[1]],
-            #                 [0] ])
-            # self.kalman_instance_y.correction_step_vel_pos(z,position_fix_axis)
             self.kalman_instance_y.correction_step_pos(self.position[1])
             self.kalman_instance_y.correction_step_vel()
             self.kalman_instance_x.correction_step_vel()

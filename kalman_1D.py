@@ -1,7 +1,5 @@
 import numpy as np
-
 from CONSTANTS import STEP_SIZE
-
 
 class Kalman:
 	"""
@@ -38,110 +36,63 @@ class Kalman:
 		# self.process_noise = 1
 		
 		'''custom matrices sphero'''
-		self.A = np.matrix([[1, delta_t],
+		self.A = np.matrix([[1, delta_t],		# 3. Transition/Dynamic matrix
 							[0,		  1]])
-		
 
 		self.B = np.matrix([[0.5*delta_t**2],
 							[       delta_t]])
 
-		# self.H = np.matrix([[1, 0],
-		# 					[0, 1] ])
-		self.H = np.matrix([[0, 0]])
+		self.H = np.matrix([[0, 0]])			# 4. Measurement matrix
 
-		self.x = np.matrix([[start_pos],	# pos
-							[0]]) 			# speed
+		self.x = np.matrix([[start_pos],		# pos
+							[0]]) 				# speed
 
 		self.u = np.matrix([[0]]) 
 
-		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			        # 1. orig Process noise covariance
 		self.Q 		 	= np.matrix( np.eye(state_dim)*self.process_noise )			        			# 1. orig Process noise covariance
-		# self.Q 		 = np.matrix( np.eye(state_dim)*0 )			                # 1. 0 Process noise covariance, acc sensor noise
-		# 2. orig Observation noise/measurement noise covariance
 		self.R 			= np.matrix(np.eye(observation_dim)*self.measurement_noise)
-		# self.R		 = np.matrix( np.eye(observation_dim) )			        # 2. 0 Observation noise/measurement noise covariance, noise gps
-		# self.A		 = np.matrix( np.eye(state_dim) )			                # 3. Transition/Dynamic matrix
-		# self.H		 = np.matrix( np.zeros((observation_dim, state_dim)) )      # 4. Measurement matrix
 		self.K		 	= np.matrix( np.zeros_like(self.H.T) )			            # 5. Kalman gain matrix
 		self.P		 	= np.matrix( np.zeros_like(self.A) )			            # 6. State covariance, exact pos t=0 known
-		# self.x		 = np.matrix( np.zeros((state_dim, 1)) )		            # 7. The actual state of the system
-		print('====== P: ', self.P)
 
 	def prediction_step(self, u):
 		self.u = u
+
 		# Make prediction
 		self.x	= self.A * self.x + self.B * self.u
-		print('+++++ P: ', self.P)
-		print('+++++ Q: ', self.Q)
 		self.P	= self.A * self.P * self.A.T + self.Q
 
 		return np.asarray(self.H*self.x)
 
-	# def correction_step_vel_pos(self, obs, position_fix_axis='x'):
-	# 	if obs.ndim == 1:
-	# 		obs = np.matrix(obs).T
-
-	# 	self.R = np.matrix(np.eye(self.obs_dim)*self.measurement_noise)
-	# 	self.H = np.matrix([[1, 0],
-    #                   		[0, 1]])
-		
-	# 	# Compute the optimal Kalman gain factor
-	# 	self.K = self.P * self.H.T * np.linalg.inv(self.H * self.P * self.H.T + self.R)
-		
-	# 	# Correction based on observation
-	# 	self.x = self.x + self.K * ( obs - self.H * self.x )
-	# 	self.P = self.P - self.K * self.H * self.P
-
 	def correction_step_vel(self):
 		speed = np.matrix([0])
 
-		# self.R = np.matrix(np.eye(1)*self.measurement_noise)
+		self.R = np.matrix(np.eye(1)*self.measurement_noise)
 		self.H = np.matrix([[0, 1]])
 
-		print('P: ', self.P)
-		print('H.T: ', self.H.T)
-		print('R: ', self.R)
-		print('state before: ', self.x)
-		print('woop: ', np.linalg.inv(self.H * self.P * self.H.T + self.R))
-		print('doop: ', self.P * self.H.T)
-		# -----------------------------------------------------------------
-		print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
-		print('K before: ', self.K)
+		# bug -----------------------------------------------------------------
 
 		# Compute the optimal Kalman gain factor
 		self.K = self.P * self.H.T * np.linalg.inv(self.H * self.P * self.H.T + self.R)
 
-		self.K[0] = 0
+		self.K[0] = 0 						# brute bug fix
 		# Correction based on observation
 		self.x = self.x + self.K * (speed - self.H * self.x)
 		self.P = self.P - self.K * self.H * self.P
-		print('+++++++++++++++++++++++++++++++++++++++++++++++++++')
-
-		# --------------------------------
-		print('state after: ', self.x)
+		# bug -------------------------------------------------------------------
 
 	def correction_step_pos(self, obs):
-		# self.R = np.matrix(np.eye(1)*self.measurement_noise)
+		self.R = np.matrix(np.eye(1)*self.measurement_noise)
 		self.H = np.matrix([[1, 0]])
-
-		print('P: ', self.P)
-		print('H.T: ', self.H.T)
-		print('R: ', self.R)
-		print('x before: ', self.x)
-		print('woop: ', np.linalg.inv(self.H * self.P * self.H.T + self.R))
 
 		# Compute the optimal Kalman gain factor
 		self.K = self.P * self.H.T * np.linalg.inv(self.H * self.P * self.H.T + self.R)
-		print('K: ', self.K)
 
 		# Correction based on observation
 		self.x = self.x + self.K * (obs - self.H * self.x)
 		self.P = self.P - self.K * self.H * self.P
-		print('x after: ', self.x)
 
 	def predict(self):
 		self.H = np.matrix([[1, 0]])
-
 		return np.asarray(self.H*self.x)
 
 """testing kalman funtionality"""
