@@ -66,7 +66,7 @@ class Kalman:
 
 		return np.asarray(self.H*self.x)
 
-	def correction_step(self, obs):
+	def correction_step(self, obs, position_fix_axis='x'):
 
 		if obs.ndim == 1:
 			obs = np.matrix(obs).T
