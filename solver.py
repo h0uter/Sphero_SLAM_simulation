@@ -38,8 +38,9 @@ class Sphero:
 
         '''per Sphero kalman filter state_dim: pos, vel | obs_dim: pos abs, vel = 0'''
         # self.kalman_instance = Kalman(6, 2, STEP_SIZE)
-        self.kalman_instance_x = Kalman(2, 2, STEP_SIZE)
-        self.kalman_instance_y = Kalman(2, 2, STEP_SIZE)
+        self.kalman_instance_x = Kalman(2, 2, STEP_SIZE, position[0])
+        self.kalman_instance_y = Kalman(2, 2, STEP_SIZE, position[1])
+        self.predicted_position = np.array(position)
 
     def compute_step(self, step):
         """Compute position & velocity of next step: v[n+1] = v[n] + a*step"""
@@ -166,7 +167,7 @@ class Sphero:
     def logger(self, step_count):
         if step_count % 150 == 0:
             # self.predicted_position = self.kalman_instance.predict()
-            self.predicted_position = [0, 0]
+            # self.predicted_position = [0, 0]
             self.predicted_position[0] = self.kalman_instance_x.predict()[0]
             self.predicted_position[1] = self.kalman_instance_y.predict()[0]
 

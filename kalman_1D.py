@@ -27,7 +27,7 @@ class Kalman:
 	http://www.njfunk.com/research/courses/652-probability-report.pdf
 	"""
 
-	def __init__(self, state_dim, observation_dim, delta_t):
+	def __init__(self, state_dim, observation_dim, delta_t, start_pos):
 		self.state_dim = state_dim
 		self.obs_dim   = observation_dim
 		
@@ -42,13 +42,13 @@ class Kalman:
 		self.H = np.matrix([[1, 0],
 							[0, 1] ])
 
-		self.x = np.matrix([[0],	# pos
+		self.x = np.matrix([[start_pos],	# pos
 							[0]]) 	# speed
 
 		self.u = np.matrix([[0]]) 
 
 		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			        # 1. orig Process noise covariance
-		self.Q 		 = np.matrix( np.eye(2)*1e-4 )			        			# 1. orig Process noise covariance
+		self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			        			# 1. orig Process noise covariance
 		# self.Q 		 = np.matrix( np.eye(state_dim)*0 )			                # 1. 0 Process noise covariance, acc sensor noise
 		self.R		 = np.matrix( np.eye(observation_dim)*0.01 )				# 2. orig Observation noise/measurement noise covariance
 		# self.R		 = np.matrix( np.eye(observation_dim) )			        # 2. 0 Observation noise/measurement noise covariance, noise gps
@@ -84,6 +84,8 @@ class Kalman:
 		# Correction based on observation
 		self.x = self.x + self.K * ( obs - self.H * self.x )
 		self.P = self.P - self.K * self.H * self.P
+
+	# def correction_step_velocity
 
 	def predict(self):
 		return np.asarray(self.H*self.x)

@@ -92,7 +92,8 @@ class Display:
         # self.error_canvas.get_tk_widget().pack(side='right')
 
         """draw the world"""
-        self.drawing = self.create()
+        self.drawing = self.create_actual_sphero_drawing()
+        self.prediction_drawing = self.create_predicted_sphero_drawing()
         self.create_walls()
         self.started = False
 
@@ -103,15 +104,17 @@ class Display:
         stop_button.pack()
 
         self.window.mainloop()
-    
-    """ End of: def __init__  """
 
-    def create(self):
+    def create_actual_sphero_drawing(self):
         """Create a drawing item for each solver.Sphero object 
         return a dictionary with solver.Sphero objects as keys and their circle drawings as items """
         # TODO: merge create & create walls
         return {
-            sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color2) for sphero in self.spheros
+            sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color2) for sphero in self.spheros 
+        }
+    def create_predicted_sphero_drawing(self):
+        return {
+            sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color3) for sphero in self.spheros 
         }
 
     def create_walls(self):
@@ -121,43 +124,44 @@ class Display:
             wall: self.environment_canvas.create_rectangle(wall.position[0], wall.position[1], wall.position[2], wall.position[3], fill =self.color4) for wall in self.walls
         }
 
-    # def update_errormap(self):
-    #     "Create Error figure V. Halithan"
-    #     update_interval = 30
+    """
+    def update_errormap(self):
+        "Create Error figure V. Halithan"
+        update_interval = 30
 
-    #     global last_pos0, last_pos1, last_pos2   #, last_poserror1
+        global last_pos0, last_pos1, last_pos2   #, last_poserror1
 
-    #     current_pos0=  self.spheros[0].position
-    #     current_pos1=  self.spheros[1].position
-    #     current_pos2=  self.spheros[2].position
+        current_pos0=  self.spheros[0].position
+        current_pos1=  self.spheros[1].position
+        current_pos2=  self.spheros[2].position
 
-    #     # current_poserror1=  self.spheros[0].speed_sensor_x_estimate
+        # current_poserror1=  self.spheros[0].speed_sensor_x_estimate
 
-    #     if abs(current_pos0[0] - last_pos0[0]) > update_interval or abs(current_pos0[1] - last_pos0[1])   > update_interval:
-    #         plt.plot([last_pos0[0],current_pos0[0]],[500-last_pos0[1],500-current_pos0[1]], 'r--')
-    #         # plt.plot([last_poserror1, current_poserror1],[500-last_pos1[1],500-current_pos1[1]], 'r--')
+        if abs(current_pos0[0] - last_pos0[0]) > update_interval or abs(current_pos0[1] - last_pos0[1])   > update_interval:
+            plt.plot([last_pos0[0],current_pos0[0]],[500-last_pos0[1],500-current_pos0[1]], 'r--')
+            # plt.plot([last_poserror1, current_poserror1],[500-last_pos1[1],500-current_pos1[1]], 'r--')
 
-    #         last_pos0 = copy.deepcopy (self.spheros[0].position)
-    #         # last_poserror1= copy.deepcopy (self.speed_sensor_x_estimate)
-    #         self.error_canvas.draw()
+            last_pos0 = copy.deepcopy (self.spheros[0].position)
+            # last_poserror1= copy.deepcopy (self.speed_sensor_x_estimate)
+            self.error_canvas.draw()
 
-    #     # if abs(current_pos1[0] - last_pos1[0]) > update_interval or abs(current_pos1[1] - last_pos1[1])   > update_interval:
-    #     #     plt.plot([last_pos1[0],current_pos1[0]],[500-last_pos1[1],500-current_pos1[1]], 'g:')
+        # if abs(current_pos1[0] - last_pos1[0]) > update_interval or abs(current_pos1[1] - last_pos1[1])   > update_interval:
+        #     plt.plot([last_pos1[0],current_pos1[0]],[500-last_pos1[1],500-current_pos1[1]], 'g:')
 
-    #     #     last_pos1 = copy.deepcopy (self.spheros[1].position)
-    #     #     self.error_canvas.draw()
+        #     last_pos1 = copy.deepcopy (self.spheros[1].position)
+        #     self.error_canvas.draw()
 
-    #     # if abs(current_pos2[0] - last_pos2[0]) > update_interval or abs(current_pos2[1] - last_pos2[1])   > update_interval:
-    #     #     plt.plot([last_pos2[0],current_pos2[0]],[500-last_pos2[1],500-current_pos2[1]], 'b-.')
-    #     #     last_pos2 = copy.deepcopy (self.spheros[2].position)
+        # if abs(current_pos2[0] - last_pos2[0]) > update_interval or abs(current_pos2[1] - last_pos2[1])   > update_interval:
+        #     plt.plot([last_pos2[0],current_pos2[0]],[500-last_pos2[1],500-current_pos2[1]], 'b-.')
+        #     last_pos2 = copy.deepcopy (self.spheros[2].position)
         
-    #         self.error_canvas.draw()
+            self.error_canvas.draw()
         
-    #     "2nd ball tracking"
-    #     # remmember2=  self.spheros[1].position
-    #     # plt.plot([remmember_last2[0],remmember2[0]],[500-remmember_last2[1],500-remmember2[1]], color = 'red')
-    #     # remmember_last2 = copy.deepcopy (self.spheros[1].position)   
-        
+        "2nd ball tracking"
+        # remmember2=  self.spheros[1].position
+        # plt.plot([remmember_last2[0],remmember2[0]],[500-remmember_last2[1],500-remmember2[1]], color = 'red')
+        # remmember_last2 = copy.deepcopy (self.spheros[1].position)   
+        """
 
     def update(self):
         """Update the drawing items for a time step"""
@@ -165,6 +169,8 @@ class Display:
         
         for sphero in self.spheros:
             self.environment_canvas.coords_circle(self.drawing[sphero], sphero.position[0], sphero.position[1], sphero.radius)
+            
+            self.environment_canvas.coords_circle(self.prediction_drawing[sphero], sphero.predicted_position[0], sphero.predicted_position[1], sphero.radius)
             
             # draw collisions in mapping environment
             if len(sphero.collision_list_hor) > 0:
@@ -195,7 +201,6 @@ class Display:
     def stop(self):
         """Stop the animation"""
         self.started = False
-
 
 """Test this module"""
 if __name__ == "__main__":
