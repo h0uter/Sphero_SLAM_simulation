@@ -5,7 +5,8 @@ import random
 # motion model
 import scipy.integrate
 from numpy import exp
-from kalman import Kalman
+# from kalman import Kalman
+from kalman_1D import Kalman
 
 class Sphero:
     """Define physics of elastic collision."""
@@ -32,11 +33,11 @@ class Sphero:
         self.collision_list_vert = []
         # TODO: last collision information, along which axis?: collision with y axis happens along the x axis
         # 
-        self.last_collision_info = {}
+        # self.last_collision_info = {}
 
-        '''per Sphero kalman filter'''
-        self.kalman_instance = Kalman(6, 2, STEP_SIZE)
-
+        '''per Sphero kalman filter state_dim: pos, vel | obs_dim: pos, vel'''
+        # self.kalman_instance = Kalman(6, 2, STEP_SIZE)
+        self.kalman_instance_x = Kalman(2, 1, STEP_SIZE)
 
     def compute_step(self, step):
         """Compute position & velocity of next step: v[n+1] = v[n] + a*step"""
@@ -56,8 +57,8 @@ class Sphero:
     def update_motion_model(self, step):
         """motion model: x_n+1 = x_n + ∫∫(virt acc sensor + gaussian noise) --> position [x, y]"""
 
-        mu, sigma = 0, 0.5 # mean and standard deviation
-        gauss_noise = np.random.normal(mu, sigma)
+        # mu, sigma = 0, 0.5 # mean and standard deviation
+        # gauss_noise = np.random.normal(mu, sigma)
         # gauss_noise = np.array( [np.random.normal(mu, sigma), np.random.normal(mu, sigma)] )
         self.acc_sensor = self.acceleration # + gauss_noise
 
@@ -66,22 +67,27 @@ class Sphero:
             [self.acceleration[0]],
             [self.acceleration[1]] ])
         
-        print ('self.acceleration: ', self.acceleration)
-        print ('acceleration: ', acceleration)
+        # print ('self.acceleration: ', self.acceleration)
+        # print ('acceleration: ', acceleration)
 
-        self.kalman_instance.prediction_step(acceleration)
+        # self.kalman_instance.prediction_step(acceleration)
+        self.kalman_instance_x.prediction_step(self.acceleration[0])
 
-    def collision_event(self):
+    # TODO: position_fix_axis
+    def collision_event(self, position_fix_axis):
 
-        # if position_fix_axis = 'x':
-        #     someNewPoint = np.matrix([
-		# 	    [self.position[0]],
-		# 	    [])
+        # someNewPoint = np.matrix([
+		# 	[self.position[0]],
+		# 	[self.position[1]]])
+        # if position_fix_axis == 'x':
+        #     someNewPoint = self.position[0]
+        # if position_fix_axis == 'y':
+        #     someNewPoint = self.position[1]
 
-        someNewPoint = np.matrix([
-			[self.position[0]],
-			[self.position[1]]])
-        self.kalman_instance.correction_step(someNewPoint)
+        z = np.matrix([ [self.position[0]], [0] ])
+        # z = self.position[0]
+        # self.kalman_instance.correction_step(someNewPoint, position_fix_axis)
+        self.kalman_instance_x.correction_step(z)
 
     def compute_energy(self, ball_list):
         """Compute kinetic energy."""
@@ -112,7 +118,7 @@ class Sphero:
         projx = step*abs(np.dot(v,np.array([1.,0.])))
         projy = step*abs(np.dot(v,np.array([0.,1.])))
 
-        """OUTER WALL x collision"""
+        """OUTER WALL along x-axis collision"""
         if abs(pos[0])-r < projx or abs(size-pos[0])-r < projx:
             print("x collision")
             self.vafter *= 0
@@ -121,9 +127,9 @@ class Sphero:
             collision_coords = np.array(pos)
             self.collision_list_vert.append(collision_coords)
             # TODO: give x to collision_event
-            self.collision_event()
+            self.collision_event('x')
             
-        """OUTER WALL y collision"""
+        """OUTER WALL along y-axis collision"""
         if abs(pos[1])-r < projy or abs(size-pos[1])-r < projy:
             print("y collision")
             self.vafter *= 0
@@ -132,12 +138,12 @@ class Sphero:
             collision_coords = np.array(pos)
             self.collision_list_hor.append(collision_coords)
 
-            self.collision_event()
+            self.collision_event('y')
 
         for wall in wall_list:
             """INNER WALL left or right collision"""
             if (abs(wall.position[0]-pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]) or (abs(-wall.position[2]+pos[0])-r < projx and pos[1]+r > wall.position[1] and pos[1]-r < wall.position[3]):
-                print("x collision")
+                print("along x-axis collision")
                 # self.vafter[0] *= -1.
                 self.vafter *= 0
                 self.acc_after[0] *= -1
@@ -145,12 +151,12 @@ class Sphero:
                 collision_coords = np.array(pos)
                 self.collision_list_vert.append(collision_coords)
 
-                self.collision_event()
+                self.collision_event('x')
 
             """INNER WALL bottom or top collision"""
             if abs(wall.position[3] - pos[1])-r < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2] or \
             abs(wall.position[1] - pos[1]-r) < projy and pos[0]+r > wall.position[0] and pos[0]-r < wall.position[2]:
-                print("y collision")
+                print("along y-axis collision")
                 # self.vafter[1] *= -1.
                 self.vafter *= 0
                 self.acc_after[1] *= -1.
@@ -158,24 +164,24 @@ class Sphero:
                 collision_coords = np.array(pos)
                 self.collision_list_hor.append(collision_coords)
 
-                self.collision_event()
+                self.collision_event('y')
 
     def logger(self, step_count):
         if step_count % 150 == 0:
-            self.predicted_position = self.kalman_instance.predict()
-            squared_error = [
-                np.sqrt(self.position[0]**2 - self.predicted_position[0]**2 )
-            ]
+            # self.predicted_position = self.kalman_instance.predict()
+            self.predicted_position = [0, 0]
+            self.predicted_position[0] = self.kalman_instance_x.predict()
+
             error = [
                 self.position[0] - self.predicted_position[0],
-                self.position[1] - self.predicted_position[1],
+                # self.position[1] - self.predicted_position[1],
             ]
             print ('''
             step:               {0}
                                   x             y
             predicted position: [{1} {2}]
             actual position:    {3}
-            squared error:      {4}
+            error:              {4}
             '''.format(
                 step_count, 
                 self.predicted_position[0], 

@@ -32,29 +32,23 @@ class Kalman:
 		self.obs_dim   = observation_dim
 		
 		'''custom matrices sphero'''
-		self.A = np.matrix([[1, 0, delta_t, 	  0],
-							[0, 1, 		 0, delta_t],
-							[0, 0, 		 1, 	  0],
-							[0, 0, 		 0, 	  1]])
+		self.A = np.matrix([[1, delta_t],
+							[0,		  1]])
+		
 
-		self.B = np.matrix([[0.5*delta_t**2,              0],
-							[             0, 0.5*delta_t**2],
-							[       delta_t,              0],
-							[             0,        delta_t]])
+		self.B = np.matrix([[0.5*delta_t**2],
+							[       delta_t]])
 
-		self.H = np.matrix([[1, 0, 0, 0],
-							[0, 1, 0, 0]])
+		self.H = np.matrix([[1, 0],
+							[0, 1] ])
 
-		self.x = np.matrix([[0],
-							[0],
-							[0],
-							[0]]) 
+		self.x = np.matrix([[0],	# pos
+							[0]]) 	# speed
 
-		self.u = np.matrix([[0],
-							[0]]) 
+		self.u = np.matrix([[0]]) 
 
 		# self.Q 		 = np.matrix( np.eye(state_dim)*1e-4 )			        # 1. orig Process noise covariance
-		self.Q 		 = np.matrix( np.eye(4)*1e-4 )			        			# 1. orig Process noise covariance
+		self.Q 		 = np.matrix( np.eye(2)*1e-4 )			        			# 1. orig Process noise covariance
 		# self.Q 		 = np.matrix( np.eye(state_dim)*0 )			                # 1. 0 Process noise covariance, acc sensor noise
 		self.R		 = np.matrix( np.eye(observation_dim)*0.01 )				# 2. orig Observation noise/measurement noise covariance
 		# self.R		 = np.matrix( np.eye(observation_dim) )			        # 2. 0 Observation noise/measurement noise covariance, noise gps
@@ -72,28 +66,20 @@ class Kalman:
 
 		return np.asarray(self.H*self.x)
 
-	def correction_step(self, obs, position_fix_axis):
+	def correction_step(self, obs):
+
 		if obs.ndim == 1:
 			obs = np.matrix(obs).T
 
-		"""update only perpendicular to axis of collision"""
-		if position_fix_axis == 'x':
-			self.H = np.matrix([[1, 0, 0, 0],
-								[0, 0, 0, 0]])
-			# self.H = np.matrix([[1, 0, 0, 0]])
-		
-		if position_fix_axis == 'y':
-			self.H = np.matrix([[0, 0, 0, 0],
-								[0, 1, 0, 0]])
-			# self.H = np.matrix([[0, 1, 0, 0]])
-
+		print('obs: ', obs)
 		print('P: ', self.P)
 		print('H.T: ', self.H.T)
 		print('R: ', self.R)
-		print('woop: ', self.H * self.P * self.H.T + self.R)
+		print('woop: ', self.H * self.x)
 		
 		# Compute the optimal Kalman gain factor
 		self.K = self.P * self.H.T * np.linalg.inv(self.H * self.P * self.H.T + self.R)
+		print('K: ', self.K)
 		
 		# Correction based on observation
 		self.x = self.x + self.K * ( obs - self.H * self.x )
@@ -103,25 +89,10 @@ class Kalman:
 		return np.asarray(self.H*self.x)
 
 """testing kalman funtionality"""
-if __name__ == "__main__":
-	# e.g., tracking an (x,y) point over time
-	k = Kalman(6, 2, STEP_SIZE)
-	# k = Kalman(6, 2)
-	predicted_path = []
-	mu, sigma = 0, 0.5 # mean and standard deviation
-	print('B: ', k.B)
-	print('Q: ', k.Q)
-	
+if __name__ == "__main__":	
 	# when you get a new observation 
 	for i in range(0,30):
-		print('x: ', k.x)
-		gauss_noise = np.random.normal(mu, sigma)
-		# someNewPoint = np.matrix([i, i*2])
-		someNewPoint = np.matrix([
-			[i],
-			[i*2]])
-		# print('someNewPoint: ', someNewPoint)
-		print('A*x: ', k.A*k.x)
-		print('B*u: ', k.B*k.u)
-		predicted_location = k.prediction_step(someNewPoint)
-		# print('predicted_location: ', predicted_location)
+		A = np.matrix([ [2, 3],
+						[1, 4] ])
+		test = i * A
+		print(test)
