@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     '''tunnel test'''
     walls = [Wall([0,100,int(MAP_SIZE),120]), Wall([0,380,int(MAP_SIZE),400])]
-    spheros = [ Sphero(m, r, startposition_ball0, [0.,0.], [5., 5.])]
+    spheros = [ Sphero(m, r, startposition_ball0, [0.,0.], ACCELERATION)]
 
     """run the simulation with given params"""
     

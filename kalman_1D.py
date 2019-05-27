@@ -66,11 +66,13 @@ class Kalman:
 	def correction_step_vel(self):
 		speed = np.matrix([0])
 
-		self.R = np.matrix(np.eye(1)*self.measurement_noise)
-		self.H = np.matrix([[0, 1]])
+		self.H = np.matrix([[0, 1]]) # measurement matrix for speed
 
+		'''
+		expected behaviour: position & speed correction are decoupled. updating with a measurement from either should not change the prediction of the other
+		behaviour: correction step with velocity also changes the position prediction
+		'''
 		# bug -----------------------------------------------------------------
-
 		# Compute the optimal Kalman gain factor
 		self.K = self.P * self.H.T * np.linalg.inv(self.H * self.P * self.H.T + self.R)
 
@@ -81,8 +83,7 @@ class Kalman:
 		# bug -------------------------------------------------------------------
 
 	def correction_step_pos(self, obs):
-		self.R = np.matrix(np.eye(1)*self.measurement_noise)
-		self.H = np.matrix([[1, 0]])
+		self.H = np.matrix([[1, 0]])  # measurement matrix for position
 
 		# Compute the optimal Kalman gain factor
 		self.K = self.P * self.H.T * np.linalg.inv(self.H * self.P * self.H.T + self.R)

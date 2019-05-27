@@ -7,7 +7,7 @@ matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
-from CONSTANTS import startposition_ball0, startposition_ball1, startposition_ball2
+from CONSTANTS import startposition_ball0, startposition_ball1, startposition_ball2, ACCELERATION
 
 def _create_circle(self, x, y, r, **kwargs):
     """Create a circle
@@ -204,7 +204,8 @@ class Display:
 
 """Test this module"""
 if __name__ == "__main__":
-    spheros = [solver.Sphero(20., 15., [300.,400.], [-8.,-8.]), solver.Sphero(20., 15., [40.,40.], [6.,5.]), solver.Sphero(20., 15., [40.,120.], [10.,15.])]
+    spheros = [solver.Sphero(20., 15., [300., 400.], [-8., -8.], ACCELERATION), solver.Sphero(20., 15., [
+        40., 40.], [6., 5.], ACCELERATION), solver.Sphero(20., 15., [40., 120.], [10., 15.], ACCELERATION)]
     walls = [solver.Wall([100,0,110,300]), solver.Wall([400,0,410,300]), solver.Wall([250, int(size-300), 260, int(size)])]
     size = 500.
     step = 0.01

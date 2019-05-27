@@ -9,5 +9,4 @@ startposition_ball0 =[20.,250.]
 startposition_ball1 =[200.,130.]
 startposition_ball2 =[40.,120.]
 # step = 0.09
-
-
+ACCELERATION = [5., 5.]
