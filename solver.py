@@ -1,13 +1,18 @@
+import plotly.plotly as py
+import plotly.graph_objs as go
 from CONSTANTS import STEP_SIZE
 import numpy as np
 import random
-import pprint
 
 # motion model
 import scipy.integrate
 from numpy import exp
-
 from kalman_1D import Kalman
+
+# plotly
+import plotly
+plotly.tools.set_credentials_file(
+    username='houterm', api_key='KK2RpBgrE4WFWr0Fi6si')
 
 class Sphero:
     """Define physics of elastic collision."""
@@ -41,6 +46,11 @@ class Sphero:
         self.kalman_instance_x = Kalman(2, 1, STEP_SIZE, position[0])
         self.kalman_instance_y = Kalman(2, 1, STEP_SIZE, position[1])
         self.predicted_position = np.array(position)
+
+        '''plotting'''
+        self.plot_y_error_list = []
+        self.plot_x_error_list = []
+        self.plot_time_list = []
 
     def compute_step(self, step):
         """Compute position & velocity of next step: v[n+1] = v[n] + a*step"""
@@ -161,7 +171,7 @@ class Sphero:
                 self.collision_event('y')
 
     def logger(self, step_count):
-        if step_count % 150 == 0:
+        if step_count % 200 == 0:
             # self.predicted_position = self.kalman_instance.predict()
             # self.predicted_position = [0, 0]
             print('predict x: ', self.kalman_instance_x.predict())
@@ -173,13 +183,34 @@ class Sphero:
                 abs(self.position[0] - self.predicted_position[0]),
                 abs(self.position[1] - self.predicted_position[1])]
 
-            print('______________________________')
-            print('step: ', step_count)
-            print('predicted position:  [', self.predicted_position[0],', ', self.predicted_position[1], ']')
-            print('actual position:      ', self.position)
-            print('error:               [', error[0], ', ', error[1], ']')
-            
+            # print('______________________________')
+            # print('step: ', step_count)
+            # print('predicted position:  [', self.predicted_position[0],', ', self.predicted_position[1], ']')
+            # print('actual position:      ', self.position)
+            # print('error:               [', error[0], ', ', error[1], ']')
 
+            self.plot_x_error_list.append(error[0])
+            self.plot_y_error_list.append(error[1])
+            self.plot_time_list.append(step_count*STEP_SIZE)
+
+            # print('x_error_list: ', self.plot_x_error_list)
+            # print('plot_time_list: ', self.plot_time_list)
+            
+def plot(sphero, step_count):
+    if step_count == 30000:
+        x_error_behaviour = go.Scatter(
+            x=sphero.plot_time_list,
+            y=sphero.plot_x_error_list
+        )
+        y_error_behaviour = go.Scatter(
+            x=sphero.plot_time_list,
+            y=sphero.plot_y_error_list
+        )
+        # print(sphero.plot_time_list)
+        # print(sphero.plot_x_error_list)
+        data = [x_error_behaviour, y_error_behaviour]
+        py.plot(data, filename='error behaviour', auto_open=True)
+        # print('plot')
 
 class Wall:
     """Wall definition"""
@@ -189,22 +220,38 @@ class Wall:
         self.position = position
 
 # TODO: merge compute_step & solve_step
-def solve_step(sphero_list, wall_list, step, size, step_count):
+def solve_step(sphero_list, wall_list, step_size, size, step_count):
     """Solve a step for every sphero."""
 
     """Detect edge-hitting and collision of every sphero""" 
     for sphero1 in sphero_list:
-        sphero1.compute_wall_collision(wall_list, step, size)
+        sphero1.compute_wall_collision(wall_list, step_size, size)
         for sphero2 in sphero_list:
             if sphero1 is not sphero2:
-                sphero1.compute_s2s_collision(sphero2,step)
+                sphero1.compute_s2s_collision(sphero2, step_size)
                 
     """Compute position of every sphero"""
     for sphero in sphero_list:
         sphero.new_direction()
-        sphero.compute_step(step)
+        sphero.compute_step(step_size)
         sphero.update_motion_model(step_count) #motion model with kalman filtering
 
     '''log sphero info'''
     for sphero in sphero_list:
         sphero.logger(step_count)
+    
+    plot(sphero_list[0], step_count)
+
+
+if __name__ == "__main__":
+    trace0 = go.Scatter(
+        x=[1, 2, 3, 4],
+        y=[10, 15, 13, 17]
+    )
+    trace1 = go.Scatter(
+        x=[1, 2, 3, 4],
+        y=[16, 5, 11, 9]
+    )
+    data = [trace0, trace1]
+
+    py.plot(data, filename='error behaviour', auto_open=True)

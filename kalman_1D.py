@@ -69,7 +69,8 @@ class Kalman:
 		self.H = np.matrix([[0, 1]]) # measurement matrix for speed
 
 		'''
-		expected behaviour: position & speed correction are decoupled. updating with a measurement from either should not change the prediction of the other
+		expected behaviour: position & speed correction are decoupled. 
+		updating with a measurement from either should not change the prediction of the other
 		behaviour: correction step with velocity also changes the position prediction
 		'''
 		# bug -----------------------------------------------------------------

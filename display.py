@@ -100,8 +100,10 @@ class Display:
         """buttons"""
         start_button = tk.Button(self.window, text="Start", command=self.start)
         stop_button = tk.Button(self.window, text="Pause", command=self.stop)
+        # plot_button = tk.Button(self.window, text="Plot", command=solver.plot(self.spheros[0]))
         start_button.pack()
         stop_button.pack()
+        # plot_button.pack()
 
         self.window.mainloop()
 
@@ -201,8 +203,8 @@ class Display:
     def stop(self):
         """Stop the animation"""
         self.started = False
-
-"""Test this module"""
+    
+        
 if __name__ == "__main__":
     spheros = [solver.Sphero(20., 15., [300., 400.], [-8., -8.], ACCELERATION), solver.Sphero(20., 15., [
         40., 40.], [6., 5.], ACCELERATION), solver.Sphero(20., 15., [40., 120.], [10., 15.], ACCELERATION)]
