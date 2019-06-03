@@ -30,8 +30,9 @@ class Kalman:
 	def __init__(self, state_dim, observation_dim, delta_t, start_pos):
 		self.state_dim = state_dim
 		self.obs_dim   = observation_dim
-		self.measurement_noise = 0.001
+		# self.measurement_noise = 0.001
 		# self.measurement_noise = 1
+		self.measurement_noise = 0
 		self.process_noise = 1e-4
 		# self.process_noise = 1
 		
@@ -41,6 +42,9 @@ class Kalman:
 
 		self.B = np.matrix([[0.5*delta_t**2],
 							[       delta_t]])
+
+		# self.B = np.matrix([[		0],
+		# 					[delta_t]])
 
 		self.H = np.matrix([[0, 0]])			# 4. Measurement matrix
 
@@ -58,13 +62,16 @@ class Kalman:
 		self.u = u
 
 		# Make prediction
-		self.x	= self.A * self.x + self.B * self.u
+		self.x	 = self.A * self.x + self.B * self.u
 		self.P	= self.A * self.P * self.A.T + self.Q
 
 		return np.asarray(self.H*self.x)
 
-	def correction_step_vel(self):
-		speed = np.matrix([0])
+	def prediction_step_unfiltered(self):
+		self.
+
+	def correction_step_vel(self, speed = 0):
+		speed = np.matrix([speed])
 
 		self.H = np.matrix([[0, 1]]) # measurement matrix for speed
 

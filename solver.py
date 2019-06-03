@@ -1,19 +1,22 @@
 import plotly.plotly as py
 import plotly.graph_objs as go
 from CONSTANTS import STEP_SIZE
+from data_plot import plot
 import numpy as np
 import random
 
 # motion model
 import scipy.integrate
 from numpy import exp
-from kalman_1D import Kalman
+from kalman_1D import Kalman  
 
 # plotly
-import plotly
-plotly.tools.set_credentials_file(
-    username='houterm', api_key='KK2RpBgrE4WFWr0Fi6si')
+# import plotly
+# plotly.tools.set_credentials_file(
+#     username='houterm', api_key='KK2RpBgrE4WFWr0Fi6si')
 
+
+# 
 class Sphero:
     """Define physics of elastic collision."""
     
@@ -76,10 +79,8 @@ class Sphero:
         # self.acc_sensor = self.acceleration # + gauss_noise
 
         '''kalman'''
-        self.kalman_instance_x.prediction_step(
-            self.acceleration[0] + gauss_noise)
-        self.kalman_instance_y.prediction_step(
-            self.acceleration[1] + gauss_noise)
+        self.kalman_instance_x.prediction_step(self.acceleration[0] + gauss_noise)
+        self.kalman_instance_y.prediction_step(self.acceleration[1] + gauss_noise)
 
     # TODO: position_fix_axis
     def collision_event(self, position_fix_axis):
@@ -172,10 +173,6 @@ class Sphero:
 
     def logger(self, step_count):
         if step_count % 200 == 0:
-            # self.predicted_position = self.kalman_instance.predict()
-            # self.predicted_position = [0, 0]
-            print('predict x: ', self.kalman_instance_x.predict())
-            print('predict y: ', self.kalman_instance_y.predict())
             self.predicted_position[0] = self.kalman_instance_x.predict()[0]
             self.predicted_position[1] = self.kalman_instance_y.predict()[0]
 
@@ -183,34 +180,80 @@ class Sphero:
                 abs(self.position[0] - self.predicted_position[0]),
                 abs(self.position[1] - self.predicted_position[1])]
 
-            # print('______________________________')
-            # print('step: ', step_count)
-            # print('predicted position:  [', self.predicted_position[0],', ', self.predicted_position[1], ']')
-            # print('actual position:      ', self.position)
-            # print('error:               [', error[0], ', ', error[1], ']')
+            'log info'
+            print('______________________________')
+            print('step: ', step_count)
+            print('predicted position:  [', self.predicted_position[0],', ', self.predicted_position[1], ']')
+            print('actual position:     [', self.position[0], ', ', self.position[1], ']')
+            print('error:               [', error[0], ', ', error[1], ']')
 
+            'for plotting'
             self.plot_x_error_list.append(error[0])
             self.plot_y_error_list.append(error[1])
             self.plot_time_list.append(step_count*STEP_SIZE)
-
-            # print('x_error_list: ', self.plot_x_error_list)
-            # print('plot_time_list: ', self.plot_time_list)
             
-def plot(sphero, step_count):
-    if step_count == 30000:
-        x_error_behaviour = go.Scatter(
-            x=sphero.plot_time_list,
-            y=sphero.plot_x_error_list
-        )
-        y_error_behaviour = go.Scatter(
-            x=sphero.plot_time_list,
-            y=sphero.plot_y_error_list
-        )
-        # print(sphero.plot_time_list)
-        # print(sphero.plot_x_error_list)
-        data = [x_error_behaviour, y_error_behaviour]
-        py.plot(data, filename='error behaviour', auto_open=True)
-        # print('plot')
+# def plot(sphero, step_count):
+#     if step_count == 20000:
+#         x_error_behaviour = go.Scatter(
+#             x=sphero.plot_time_list,
+#             y=sphero.plot_x_error_list,
+#             name='x direction'
+#         )
+#         y_error_behaviour = go.Scatter(
+#             x=sphero.plot_time_list,
+#             y=sphero.plot_y_error_list,
+#             name='y direction'
+#         )
+
+#         layout = go.Layout(
+#             title=go.layout.Title(
+#                 text='Error Behaviour',
+#                 xref='paper',
+#                 x=0
+#             ),
+#             xaxis=go.layout.XAxis(
+#                 title=go.layout.xaxis.Title(
+#                     text='Time',
+#                     font=dict(
+#                         family='Courier New, monospace',
+#                         size=22,
+#                         color='#7f7f7f'
+#                     )
+#                 )
+#             ),
+#             yaxis=go.layout.YAxis(
+#                 title=go.layout.yaxis.Title(
+#                     text='Error Magnitude',
+#                     font=dict(
+#                         family='Courier New, monospace',
+#                         size=22,
+#                         color='#7f7f7f'
+#                     )
+#                 )
+#             ),
+#             legend=dict(
+#                 # x=0,
+#                 # y=1,
+#                 traceorder='normal',
+#                 font=dict(
+#                     family='sans-serif',
+#                     size=20,
+#                     color='#000'
+#                 ),
+#                 # bgcolor='#E2E2E2',
+#                 # bordercolor='#FFFFFF',
+#                 # borderwidth=2
+#             )
+#         )
+#         # print(sphero.plot_time_list)
+#         # print(sphero.plot_x_error_list)
+#         data = [x_error_behaviour, y_error_behaviour]
+
+#         fig = go.Figure(data=data, layout=layout)
+#         # py.iplot(fig, filename='styling-names')
+
+#         # py.plot(data, filename='error behaviour', auto_open=True)
+#         py.plot(fig, filename='error behaviour', auto_open=True)
 
 class Wall:
     """Wall definition"""
@@ -242,16 +285,3 @@ def solve_step(sphero_list, wall_list, step_size, size, step_count):
     
     plot(sphero_list[0], step_count)
 
-
-if __name__ == "__main__":
-    trace0 = go.Scatter(
-        x=[1, 2, 3, 4],
-        y=[10, 15, 13, 17]
-    )
-    trace1 = go.Scatter(
-        x=[1, 2, 3, 4],
-        y=[16, 5, 11, 9]
-    )
-    data = [trace0, trace1]
-
-    py.plot(data, filename='error behaviour', auto_open=True)
