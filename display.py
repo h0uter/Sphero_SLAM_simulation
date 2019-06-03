@@ -203,7 +203,6 @@ class Display:
     def stop(self):
         """Stop the animation"""
         self.started = False
-    
         
 if __name__ == "__main__":
     spheros = [solver.Sphero(20., 15., [300., 400.], [-8., -8.], ACCELERATION), solver.Sphero(20., 15., [
