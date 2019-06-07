@@ -6,7 +6,8 @@ STEP_SIZE = 0.006
 "sphero params for many spheros"
 m = 20.
 r = 10.
-START_POS_BALL_0 =[360.,150.]
+# START_POS_BALL_0 =[360.,150.]
+START_POS_BALL_0 =[20.,200.]
 startposition_ball1 =[200.,130.]
 startposition_ball2 =[40.,120.]
 # step = 0.09

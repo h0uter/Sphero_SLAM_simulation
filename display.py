@@ -114,6 +114,7 @@ class Display:
         return {
             sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color2) for sphero in self.spheros 
         }
+        
     def create_predicted_sphero_drawing(self):
         return {
             sphero: self.environment_canvas.create_circle(sphero.position[0], sphero.position[1], sphero.radius, fill=self.color3) for sphero in self.spheros 

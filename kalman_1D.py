@@ -49,6 +49,7 @@ class Kalman:
 
 		self.x = np.matrix([[start_pos],		# pos
 							[0]]) 				# speed
+		self.xx = self.x						# unfiltered state prediction for plot
 
 		self.u = np.matrix([[0]]) 
 
@@ -60,14 +61,19 @@ class Kalman:
 	def prediction_step(self, u):
 		self.u = u
 
-		# Make prediction
-		self.x	 = self.A * self.x + self.B * self.u
+		''' Make prediction '''
+		self.x	= self.A * self.x + self.B * self.u
 		self.P	= self.A * self.P * self.A.T + self.Q
 
-		return np.asarray(self.H*self.x)
+		''' unfiltered for plot'''
+		self.xx = self.A * self.xx + self.B * self.u
+		self.P = self.A * self.P * self.A.T + self.Q
+
+		'''return prediction'''
+		return np.asarray(self.H * self.x)
 
 	# def prediction_step_unfiltered(self):
-	# 	self.
+		
 
 	def correction_step_vel(self, speed = 0):
 		speed = np.matrix([speed])
@@ -102,6 +108,10 @@ class Kalman:
 	def predict(self):
 		self.H = np.matrix([[1, 0]])
 		return np.asarray(self.H*self.x)
+	
+	def predict_unfiltered(self):
+		self.H = np.matrix([[1, 0]])
+		return np.asarray(self.H*self.xx)
 
 """testing kalman funtionality"""
 if __name__ == "__main__":	

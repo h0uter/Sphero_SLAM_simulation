@@ -1,7 +1,8 @@
 import plotly.plotly as py
 import plotly.graph_objs as go
-from CONSTANTS import STEP_SIZE
-from data_plot import plot
+from CONSTANTS import STEP_SIZE, MAP_SIZE
+import plot_error
+import plot_path
 import numpy as np
 import random
 
@@ -22,7 +23,7 @@ class Sphero:
         velocity the velocity vector of sphero
         acceleration vector of the sphero
         """
-        self.mass = mass 
+        self.mass = mass
         self.radius = radius
         self.position = np.array(position)
         self.velocity = np.array(velocity)
@@ -33,20 +34,24 @@ class Sphero:
 
         self.collision_list_hor = []
         self.collision_list_vert = []
-        # TODO: last collision information, along which axis?: collision with y axis happens along the x axis
-        # 
-        # self.last_collision_info = {}
 
         '''per Sphero kalman filter state_dim: pos, vel | obs_dim: pos abs, vel = 0'''
         # self.kalman_instance = Kalman(6, 2, STEP_SIZE)
         self.kalman_instance_x = Kalman(2, 1, STEP_SIZE, position[0])
         self.kalman_instance_y = Kalman(2, 1, STEP_SIZE, position[1])
         self.predicted_position = np.array(position)
+        self.unfiltered_predicted_position = np.array(position)
 
         '''plotting'''
         self.plot_y_error_list = []
         self.plot_x_error_list = []
+        self.plot_y_unfiltered_error_list = []
+        self.plot_x_unfiltered_error_list = []
         self.plot_time_list = []
+
+        ''' [ [x1, x2, ..., xn], [y1, y2, ..., yn]] '''
+        self.plot_path = [[position[0]], [MAP_SIZE - position[1]]]
+        self.plot_predicted_path = [[position[0]], [MAP_SIZE - position[1]]]
 
     def compute_step(self, step):
         """Compute position & velocity of next step: v[n+1] = v[n] + a*step"""
@@ -77,6 +82,11 @@ class Sphero:
 
     # TODO: position_fix_axis
     def collision_event(self, position_fix_axis):
+        '''for plotting path'''
+        self.plot_predicted_path[0].append(None)
+        self.plot_predicted_path[1].append(None)
+
+
         if position_fix_axis == 'x':
             self.kalman_instance_x.correction_step_pos(self.position[0])
             self.kalman_instance_x.correction_step_vel()  # buggg
@@ -165,26 +175,48 @@ class Sphero:
                 self.collision_event('y')
 
     def logger(self, step_count):
+        '''logger used for retrieving results from simulation'''
         if step_count % 200 == 0:
             self.predicted_position[0] = self.kalman_instance_x.predict()[0]
             self.predicted_position[1] = self.kalman_instance_y.predict()[0]
 
+            self.unfiltered_predicted_position[0] = self.kalman_instance_x.predict_unfiltered()[0]
+            self.unfiltered_predicted_position[1] = self.kalman_instance_y.predict_unfiltered()[0]
+
             error = [
                 abs(self.position[0] - self.predicted_position[0]),
                 abs(self.position[1] - self.predicted_position[1])]
+                
+            '''error is bound by maximum uncertainty'''
+            unfiltered_error = [
+                min(abs(self.position[0] - self.unfiltered_predicted_position[0]), MAP_SIZE),
+                min(abs(self.position[1] - self.unfiltered_predicted_position[1]), MAP_SIZE)]
 
             'log info'
             print('______________________________')
             print('step: ', step_count)
-            print('predicted position:  [', self.predicted_position[0],', ', self.predicted_position[1], ']')
-            print('actual position:     [', self.position[0], ', ', self.position[1], ']')
-            print('error:               [', error[0], ', ', error[1], ']')
+            print('predicted position:              [', self.predicted_position[0],', ', self.predicted_position[1], ']')
+            print('unfiltered predicted position:   [', self.unfiltered_predicted_position[0],', ', self.unfiltered_predicted_position[1], ']')
+            print('actual position:                 [', self.position[0], ', ', self.position[1], ']')
+            print('error:                           [', error[0], ', ', error[1], ']')
+            print('unfiltered error:                [', unfiltered_error[0], ', ', unfiltered_error[1], ']')
 
             'for plotting'
             self.plot_x_error_list.append(error[0])
             self.plot_y_error_list.append(error[1])
+            self.plot_x_unfiltered_error_list.append(unfiltered_error[0])
+            self.plot_y_unfiltered_error_list.append(unfiltered_error[1])
             self.plot_time_list.append(step_count*STEP_SIZE)
-            
+        
+        if step_count % 10 == 0:
+            self.predicted_position[0] = self.kalman_instance_x.predict()[0]
+            self.predicted_position[1] = self.kalman_instance_y.predict()[0]
+
+            self.plot_path[0].append(self.position[0])
+            self.plot_path[1].append(MAP_SIZE - self.position[1])
+            self.plot_predicted_path[0].append(self.predicted_position[0])
+            self.plot_predicted_path[1].append(MAP_SIZE - self.predicted_position[1])
+
 
 class Wall:
     """Wall definition"""
@@ -193,7 +225,6 @@ class Wall:
         """ position = [x1, y1, x2, y2] """
         self.position = position
 
-# TODO: merge compute_step & solve_step
 def solve_step(sphero_list, wall_list, step_size, size, step_count):
     """Solve a step for every sphero."""
 
@@ -214,5 +245,8 @@ def solve_step(sphero_list, wall_list, step_size, size, step_count):
     for sphero in sphero_list:
         sphero.logger(step_count)
     
-    plot(sphero_list[0], step_count)
+    '''uncomment to plot either the path or the the error behaviour'''
+    # plot_error.plot(sphero_list[0], step_count)
+    # plot_path.plot(sphero_list[0], step_count)
+
 
